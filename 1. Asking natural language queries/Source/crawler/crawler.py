@@ -86,7 +86,7 @@ class CrawlerCache(object):
 
 
 class Crawler(object):
-    def __init__(self, cache=None, depth=2):
+    def __init__(self, cache=None, depth=2, save=None):
         """
         depth: how many time it will bounce from page one (optional)
         cache: a basic cache controller (optional)
@@ -94,6 +94,7 @@ class Crawler(object):
         self.depth = depth
         self.content = {}
         self.cache = cache
+        self.save = save
 
     def crawl(self, url, no_cache=None):
         """
@@ -126,7 +127,11 @@ class Crawler(object):
         return page
 
     def is_cacheable(self, url):
-        return True;
+        if self.save in url:
+            cacheable = True
+        else:
+            cacheable = False
+        return cacheable
         #print ('is_cachable: self.cache={} and self.no_cache={} and not self.no_cache({})={}'.format(self.cache, self.no_cache, url, 'abcd'))
         #return self.cache and self.no_cache \
         #    and not self.no_cache(url)
