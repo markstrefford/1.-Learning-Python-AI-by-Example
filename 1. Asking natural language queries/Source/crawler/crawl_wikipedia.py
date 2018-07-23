@@ -48,7 +48,7 @@ class crawl_wikipedia:
         :param depth:
         :return:
         """
-        print('Checking for subcategories of {} at depth {}'.format(category, depth))
+        print(u'Checking for subcategories of {} at depth {}'.format(category, depth))
         if depth:
             # Get details of this category
             # Members are pages related to this category
