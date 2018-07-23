@@ -2,12 +2,14 @@
 Download content for a specified category on Wikipedia into a local database
 This text corpus will be used for topic modelling
 """
+
 import sqlite3
 import wptools
 import re
 from bs4 import BeautifulSoup
 
-class crawl_wikipedia:
+
+class CrawlWikipedia:
     def __init__(self, db_file):
         """
         Intialise the crawl_wikipedia class, set up a
