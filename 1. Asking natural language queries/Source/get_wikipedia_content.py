@@ -21,7 +21,7 @@ category = 'Category:Artificial_intelligence'
 depth = 2
 
 # Set up a simple database so we can use this data later
-crawler = CrawlWikipedia('content.db')
+crawler = CrawlWikipedia('data/content.db')
 
 # Now use the Wikipedia API to populate our database
 crawler.get_categories_and_members(category, depth)
