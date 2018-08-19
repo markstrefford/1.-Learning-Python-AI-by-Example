@@ -9,7 +9,7 @@ and responses from.
 """
 
 # Imports
-from crawler.crawl_wikipedia import CrawlWikipedia
+from Crawler.CrawlWikipedia import CrawlWikipedia
 
 # Configuration:
 # Start with the top level Artificial Intelligence category on Wikipedia

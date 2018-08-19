@@ -22,6 +22,8 @@ RUN pip install --upgrade pip
 RUN pip install wptools
 RUN pip install gensim
 RUN pip install nltk
+RUN pip install flask
+RUN pip install flask_restful
 
 
 
