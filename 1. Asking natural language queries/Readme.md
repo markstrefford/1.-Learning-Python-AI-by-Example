@@ -23,3 +23,8 @@ and then you can connect to the container using
 ```bash
 docker exec -ti python-ai-1 bash
 ```
+
+
+Example `curl` command:
+
+```curl -H "Content-Type: application/json" -X POST localhost:5000/lda --data '{"query": "using deep learning for computer vision in real time"}'```

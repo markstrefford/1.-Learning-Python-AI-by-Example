@@ -72,7 +72,6 @@ def query_lda_model(query):
         pageid = page_ids[sims[idx][0]]
         if pageid not in pids:
             pids.append(pageid)
-            print('Page ID {}: {}'.format(pageid[0], content.get_page_url_by_id(pageid)[0]))
             results.append((pageid[0], content.get_page_url_by_id(pageid)[0]))
             num_results -= 1
         idx += 1
@@ -81,14 +80,12 @@ def query_lda_model(query):
 
 class LdaServer(Resource):
     def post(self):
-        print(request)
         json_data = request.get_json(force=True)
-        print('LdaServer(): json={}'.format(json_data))
         result = {}
         if 'query' in json_data:
             result.update(query_lda_model(json_data['query']))
         else:
-            result = 'Incorrect jsom request'
+            result = 'Incorrect json request'
         return result
 
 
