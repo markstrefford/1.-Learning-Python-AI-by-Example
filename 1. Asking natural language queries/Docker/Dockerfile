@@ -20,6 +20,9 @@ ENV PATH="${PATH}:/root/anaconda3/bin"
 RUN conda update -n base conda
 RUN pip install --upgrade pip
 RUN pip install wptools
+RUN pip install gensim
+RUN pip install nltk
+
 
 
 
