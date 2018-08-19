@@ -57,26 +57,34 @@ class CrawlWikipedia:
             # Members are pages related to this category
             cat = wptools.category(category)
             cat_members = cat.get_members()
+
             # First let's save any members (pages) for this category
             if 'members' in cat_members.data.keys():
                 for cat_member in cat_members.data['members']:
                     # Check to see if we have this page already, ignore if we do
                     if cat_member['pageid'] not in self.get_page_ids():
-                        # Get the page content
+
+                        # If we don't have this page, then get the page content
                         page = wptools.page(pageid=cat_member['pageid']).get_parse()
+
                         # Get URL in wikipedia
                         url = page.get_query().data['url']
+
                         # Remove <ref> and other HTML syntax
                         text = BeautifulSoup(page.data['wikitext'], 'html.parser').get_text()
+
                         # Remove other markup such as [[...]] and {{...}}
                         clean_content = re.sub(r'\s*{.*}\s*|\s*\[.*\]\s*', '', text)
+
                         # Now store
                         print('Saving pageid {} / url {}'.format(cat_member['pageid'], url))
                         self._save_page_content(category, cat_member['pageid'], url, clean_content)
+
             # Now iterate through any subcategories
             if 'subcategories' in cat_members.data.keys():
                 subcats = cat_members.data['subcategories']
                 for subcat in subcats:
                     self.categories.append(subcat)
+
                     # Recursively call this function until we've explored Wikipedia up to the specified depth
                     self.get_categories_and_members(subcat['title'], depth - 1)

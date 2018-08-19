@@ -15,8 +15,10 @@ from crawler.crawl_wikipedia import CrawlWikipedia
 # Start with the top level Artificial Intelligence category on Wikipedia
 category = 'Category:Artificial_intelligence'
 
-# Only go down 1 level in subcategories
-depth = 1
+# Process 2 levels in subcategories
+# Note that a depth of 1 provides circa 280 pages which is sufficient for dev / test purposes
+# and is quicker than depth=2 which has significantly more Wikipedia pages in scope
+depth = 2
 
 # Set up a simple database so we can use this data later
 crawler = CrawlWikipedia('content.db')
