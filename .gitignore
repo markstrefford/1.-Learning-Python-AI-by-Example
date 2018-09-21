@@ -1,6 +1,19 @@
+# IDE
 .idea/*
 *db
+
+# Python
 __pycache__
 .ipynb_checkpoints
+
+# General
+slides/
+
+# Module 1
 lda_model*
 dictionary
+corpus
+
+# Module 2
+# 2. Recognising Faces/Source/aws-rekognition/access-policy.json
+access-policy.json
