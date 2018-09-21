@@ -1,6 +1,5 @@
 # IDE
 .idea/*
-*db
 
 # Python
 __pycache__
@@ -10,10 +9,14 @@ __pycache__
 slides/
 
 # Module 1
+*db
 lda_model*
 dictionary
 corpus
 
 # Module 2
-# 2. Recognising Faces/Source/aws-rekognition/access-policy.json
 access-policy.json
+
+
+
+
