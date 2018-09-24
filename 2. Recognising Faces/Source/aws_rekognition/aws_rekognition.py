@@ -55,21 +55,24 @@ def test(image):
         CollectionId='applied-ai-collection',
         Image={'Bytes': image_binary}
     )
-    print(response)
+    # print(response)
+    faces = []
     for match in response['FaceMatches']:
-        print(match['Face']['FaceId'], match['Face']['Confidence'])
+        # print(match['Face']['FaceId'], match['Face']['Confidence'])
 
         face = dynamodb.get_item(
-            TableName='applied_ai_collection',
+            TableName='applied-ai-collection',
             Key={'RekognitionId': {'S': match['Face']['FaceId']}}
         )
 
         if 'Item' in face:
-            print(face['Item']['FullName']['S'])
+            # print(face['Item']['FullName']['S'])
+            faces.append(face['Item']['FullName']['S'])
         else:
-            print('no match found in person lookup')
+            # print('no match found in person lookup')
+            faces.append('no match found in person lookup')
 
-    return response['FaceMatches']
+    return set(faces)  # response['FaceMatches']
 
 
 
