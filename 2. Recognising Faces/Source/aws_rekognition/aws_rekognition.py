@@ -32,6 +32,7 @@ def train(image_paths, labels, bucket_name):
         ret = obj.put(Body=file,
                       Metadata={'FullName': name}
                       )
+        print(ret)
 
 def test(image):
     """
@@ -51,7 +52,7 @@ def test(image):
 
     print('Called rekognition...')
     response = rekognition.search_faces_by_image(
-        CollectionId='applied_ai_collection',
+        CollectionId='applied-ai-collection',
         Image={'Bytes': image_binary}
     )
     print(response)

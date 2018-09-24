@@ -13,7 +13,7 @@ These commands will help you configure AWS for this module.  Note that you'll ne
                 "dynamodb:PutItem"
             ],
             "Resource": [
-                "arn:aws:dynamodb:aws-region:account-id:table/applied_ai_collection"
+                "arn:aws:dynamodb:aws-region:account-id:table/applied-ai-collection"
 }...               
 ``` 
 
@@ -45,12 +45,12 @@ aws configure
 
 ### Rekognition Collection
 ```bash
-aws rekognition create-collection --collection-id applied_ai_collection --region eu-west-1
+aws rekognition create-collection --collection-id applied-ai-collection --region eu-west-1
 ```
 
 #### DynamoDB
 ```bash
-aws dynamodb create-table --table-name applied_ai_collection \
+aws dynamodb create-table --table-name applied-ai-collection \
 --attribute-definitions AttributeName=RekognitionId,AttributeType=S \
 --key-schema AttributeName=RekognitionId,KeyType=HASH \
 --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1 \

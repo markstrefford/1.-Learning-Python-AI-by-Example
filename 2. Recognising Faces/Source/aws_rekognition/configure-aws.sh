@@ -6,13 +6,13 @@ read -e -p "Please enter your AWS region [${DEFAULT_REGION}]:" REGION
 REGION="${REGION:-${DEFAULT_REGION}}"
 
 # Get collection name
-COLLECTION="applied_ai_collection"
+COLLECTION="applied-ai-collection"
 
 # Table name
-TABLE_NAME="applied_ai_collection"
+TABLE_NAME="applied-ai-collection"
 
 # Buckets need to be unique across AWS, so loop until one is created
-DEFAULT_BUCKET_NAME="applied-ai-" + `date +"%Y%m%d%H%M%S"`
+DEFAULT_BUCKET_NAME="applied-ai-`date +"%Y%m%d%H%M%S"`"
 read -e -p "Please enter your S3 bucket name [${DEFAULT_BUCKET_NAME}]:" BUCKET_NAME
 BUCKET_NAME="${BUCKET_NAME:-${DEFAULT_BUCKET_NAME}}"
 
