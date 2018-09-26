@@ -12,7 +12,7 @@ import boto3
 import urllib
 import json
 from PIL import Image
-
+from operator import itemgetter
 
 def train(image_paths, labels, bucket_name):
     """
@@ -67,12 +67,15 @@ def test(image):
 
         if 'Item' in face:
             # print(face['Item']['FullName']['S'])
-            faces.append(face['Item']['FullName']['S'])
+            faces.append((face['Item']['FullName']['S'], match['Face']['Confidence']))
         else:
             # print('no match found in person lookup')
-            faces.append('no match found in person lookup')
+            faces.append(('no match found in person lookup', 0))
 
-    return set(faces)  # response['FaceMatches']
+    # Return face with highest confidence
+    sorted_by_confidence = sorted(faces, key=itemgetter(1), reverse=True)
+    # print('sorted faces:\n{}'.format(sorted_by_confidence))
+    return sorted_by_confidence[0]
 
 
 
