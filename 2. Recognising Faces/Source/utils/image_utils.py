@@ -3,7 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def show_side_by_side(images: list, cmap: str = 'gray', figsize: tuple = None, labels: list=[]) -> None:
+def load_image_as_array(path: str, convert_colour=cv2.COLOR_BGR2RGB) -> np.ndarray:
+    """Load image from disk into numpy array"""
+    img = cv2.cvtColor(cv2.imread(path), convert_colour)
+    return img
+
+
+def show_side_by_side(images: list, cmap: str='gray', figsize: tuple = None, labels: list=[]) -> None:
     """Pass a list of images to display them side by side"""
     fig, axes = plt.subplots(ncols=len(images), nrows=1)
 
@@ -22,7 +28,8 @@ def show_side_by_side(images: list, cmap: str = 'gray', figsize: tuple = None, l
     plt.tight_layout()
 
 
-def load_image_as_array(path: str) -> np.ndarray:
-    """Load image from disk into numpy array"""
-    img = cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2RGB)
-    return img
+def show_image(image: np.ndarray):
+    img = image.squeeze()
+    plt.axis("off")
+    plt.imshow(img, cmap='gray', interpolation='nearest')  # Manipulation to display image in the correct orientation!
+    plt.show()
