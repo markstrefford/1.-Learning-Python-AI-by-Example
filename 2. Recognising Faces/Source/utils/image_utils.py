@@ -3,13 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def load_image_as_array(path: str, convert_colour=cv2.COLOR_BGR2RGB) -> np.ndarray:
+def load_image_as_array(path: str, convert_colour=cv2.COLOR_BGR2RGB, image_size: tuple=(300,300)) -> np.ndarray:
     """Load image from disk into numpy array"""
     img = cv2.cvtColor(cv2.imread(path), convert_colour)
-    return img
+    return cv2.resize(img, image_size)
 
 
-def show_side_by_side(images: list, cmap: str='gray', figsize: tuple = None, labels: list=[]) -> None:
+def show_side_by_side(images: list, cmap: str='gray', figsize: tuple=None, labels: list=[]) -> None:
     """Pass a list of images to display them side by side"""
     fig, axes = plt.subplots(ncols=len(images), nrows=1)
 
