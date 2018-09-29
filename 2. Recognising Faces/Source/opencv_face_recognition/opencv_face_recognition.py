@@ -19,10 +19,10 @@ confidence = 0.5
 mean_subtract_values = (104, 177, 123)
 
 
-class face_embedding:
-    def __init__(self, prototxt_path='../opencv_face_recognition/face_detector/deploy.prototxt',
-                 model_path='../opencv_face_recognition/face_detector/res10_300x300_ssd_iter_140000_fp16.caffemodel',
-                 embedding_model='../opencv_face_recognition/openface/nn4.small2.v1.t7',
+class face_recognition:
+    def __init__(self, prototxt_path='./opencv_face_recognition/face_detector/deploy.prototxt',
+                 model_path='./opencv_face_recognition/face_detector/res10_300x300_ssd_iter_140000_fp16.caffemodel',
+                 embedding_model='./opencv_face_recognition/openface/nn4.small2.v1.t7',
                  labels_file=False, recogniser_file=False):
         """
 
@@ -32,7 +32,6 @@ class face_embedding:
         :param labels: Labels from trained classifier
         :param recogniser: Trained classifer
         """
-
         self.detector = cv2.dnn.readNetFromCaffe(prototxt_path, model_path)
         self.embedder = cv2.dnn.readNetFromTorch(embedding_model)
         self.labels = []
