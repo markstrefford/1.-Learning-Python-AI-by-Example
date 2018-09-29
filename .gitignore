@@ -4,6 +4,7 @@
 # Python
 __pycache__
 .ipynb_checkpoints
+*.p
 
 # General
 slides/
@@ -18,6 +19,10 @@ corpus
 # Module 2
 access-policy.json
 lfw/
+*.prototxt
+*.caffemodel
+nn4.small2.v1.t7
+
 
 
 

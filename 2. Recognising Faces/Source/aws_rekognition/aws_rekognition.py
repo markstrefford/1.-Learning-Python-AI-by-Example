@@ -9,8 +9,6 @@ Upload images to test / recognise faces
 import os
 import io
 import boto3
-import urllib
-import json
 from PIL import Image
 from operator import itemgetter
 
