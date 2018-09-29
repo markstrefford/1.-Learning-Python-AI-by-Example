@@ -22,6 +22,8 @@ lfw/
 *.prototxt
 *.caffemodel
 nn4.small2.v1.t7
+my_photos/
+*.JPG
 
 
 
