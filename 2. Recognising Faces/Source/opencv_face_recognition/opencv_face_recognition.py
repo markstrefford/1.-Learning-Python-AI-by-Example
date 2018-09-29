@@ -55,8 +55,8 @@ class face_recognition:
         vec = []
         start_x, start_y, end_x, end_y = 0, 0, 0, 0
 
-        image_blob = cv2.dnn.blobFromImage(
-            cv2.resize(image, (300, 300)), 1.0, (300, 300),
+        resized_image = cv2.resize(image, (300, 300))
+        image_blob = cv2.dnn.blobFromImage(resized_image, 1.0, (300, 300),
             mean_subtract_values, swapRB=False, crop=False)
         (h, w) = image.shape[:2]
 
@@ -109,30 +109,33 @@ class face_recognition:
         :param y: labels
         :return:
         """
+        print('Training model with {} sample images'.format(len(X)))
         self._build_embeddings(X, y)
         self.labels = self.le.fit_transform(self.embeddings['names'])
         self.recogniser.fit(self.embeddings['embeddings'], self.labels)
+        print('Training complete')
 
-    def predict(self, image):
+    def recognise(self, image):
         """
         Predict all faces in an image
         :param image: np.array containing image
         :return: np.array containing image, bbox and labels
         """
         box, vec = self.get_face_embeddings_from_image(image)
-        predictions = self.recogniser.predict_proba(vec)[0]
-        j = np.argmax(predictions)
-        proba = predictions[j]
-        name = self.le.classes_[j]
+        if len(vec):
+            predictions = self.recogniser.predict_proba(vec)[0]
+            if len(predictions) > 0:
+                j = np.argmax(predictions)
+                proba = predictions[j]
+                name = self.le.classes_[j]
 
-        start_x, start_y, end_x, end_y = box
-        text = "{}: {:.2f}%".format(name, proba * 100)
-        y = start_y - 10 if start_y - 10 > 10 else start_y + 10
-        cv2.rectangle(image, (start_x, start_y), (end_x, end_y),
-                      (0, 0, 255), 2)
-        cv2.putText(image, text, (start_x, y),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
-
+                start_x, start_y, end_x, end_y = box
+                text = "{}: {:.2f}%".format(name, proba * 100)
+                y = start_y - 10 if start_y - 10 > 10 else start_y + 10
+                cv2.rectangle(image, (start_x, start_y), (end_x, end_y),
+                              (0, 0, 255), 2)
+                cv2.putText(image, text, (start_x, y),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
         return image
 
 

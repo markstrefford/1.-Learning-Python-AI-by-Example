@@ -13,6 +13,7 @@ from glob import glob
 from opencv_face_recognition import face_recognition
 
 # TODO - Add a parameter to a folder of images
+# TODO - Add a parameter to a pre-trained model
 # Load the face detector
 face_recogniser = face_recognition()
 
@@ -33,13 +34,16 @@ if ( not cam.isOpened() ):
 print ("cam: ok.")
 
 while True:
-    ret, img = cam.read()
+    ret, frame = cam.read()
     # TODO - Detect faces here
-    rects = [0, 0, 100, 100]
-    # roi will keep the cropped face image ( if there was one )
-    roi = None
+    print(frame.shape)
+    labelled_frame = face_recogniser.recognise(frame)
 
-    cv2.imshow('facedetect', img)
+    cv2.imshow('Face Recognition', labelled_frame)
+    k = cv2.waitKey(5) & 0xFF
+
+    # bailout on 'esc'
+    if k == 27: break
 
 
 
