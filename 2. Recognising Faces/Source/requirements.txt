@@ -1,0 +1,7 @@
+cv2-python
+imutils
+pandas
+numpy
+argparse
+boto3
+PIL

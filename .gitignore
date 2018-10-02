@@ -1,6 +1,33 @@
+# IDE
 .idea/*
-*db
+
+# Python
 __pycache__
 .ipynb_checkpoints
+*.p
+
+# General
+slides/
+.DS_Store
+
+# Module 1
+*db
 lda_model*
 dictionary
+corpus
+
+# Module 2
+access-policy.json
+lfw/
+*.prototxt
+*.caffemodel
+nn4.small2.v1.t7
+my_photos/
+*.JPG
+*.jpg
+
+
+
+
+
+
