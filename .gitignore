@@ -9,6 +9,7 @@ __pycache__
 # General
 # slides/
 .DS_Store
+*.zip
 
 # Module 1
 *db
