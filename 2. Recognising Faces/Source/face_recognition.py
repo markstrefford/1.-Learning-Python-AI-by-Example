@@ -29,6 +29,7 @@ for filename in images:
 face_recogniser.train(images, labels)
 
 # Now start video feed
+print('Checking for camera...')
 cam = cv2.VideoCapture(0)
 if ( not cam.isOpened() ):
     print ("no cam!")

@@ -7,7 +7,7 @@ __pycache__
 *.p
 
 # General
-slides/
+# slides/
 .DS_Store
 
 # Module 1
