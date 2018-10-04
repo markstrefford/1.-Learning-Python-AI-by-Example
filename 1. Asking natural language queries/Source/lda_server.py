@@ -1,3 +1,4 @@
+# noinspection PyInterpreter
 """
 lda_server.py
 

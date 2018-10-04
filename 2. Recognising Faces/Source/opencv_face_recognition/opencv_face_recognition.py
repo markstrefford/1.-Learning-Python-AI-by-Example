@@ -1,5 +1,5 @@
 """
-
+OpenCV Face Recognition
 """
 
 
@@ -117,6 +117,7 @@ class face_recognition:
 
     def _build_embeddings(self, X, y):
         for i, (image_path, name) in enumerate(zip(X, y)):
+            print(image_path)
             image = load_image_as_array(image_path)
             print('Processing image {}'.format(image_path))
             _, face_embedding_vector = self.get_face_embeddings_from_image(image, all=False)[0]
@@ -148,7 +149,6 @@ class face_recognition:
                     cv2.putText(image, text, (start_x, y),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
         return image
-
 
     def train(self, X, y):
         """
