@@ -12,10 +12,6 @@ import sys
 from glob import glob
 from opencv_face_recognition import face_recognition
 
-# TODO - Add a parameter to a folder of images
-# TODO - Add a parameter to a pre-trained model
-# TODO - Handle more than one face!
-
 # Load the face detector
 face_recogniser = face_recognition()
 
