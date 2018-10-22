@@ -36,6 +36,9 @@ if ( not cam.isOpened() ):
     sys.exit()
 print ("cam: ok.")
 
+cv2.namedWindow('Face Recognition', cv2.WND_PROP_FULLSCREEN)
+cv2.setWindowProperty('Face Recognition', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
 while True:
     ret, frame = cam.read()
     labelled_frame = face_recogniser.recognise(frame)
