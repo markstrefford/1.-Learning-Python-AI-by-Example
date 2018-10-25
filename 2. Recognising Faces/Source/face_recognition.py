@@ -40,11 +40,9 @@ while True:
     labelled_frame = face_recogniser.recognise(frame)
 
     cv2.imshow('Face Recognition', labelled_frame)
-    k = cv2.waitKey(5) & 0xFF
 
-    # bailout on 'esc'
-    if k == 27:
-        break
+
+    
 
 
 
