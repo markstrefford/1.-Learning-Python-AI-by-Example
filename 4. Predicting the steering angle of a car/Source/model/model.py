@@ -15,9 +15,10 @@ tensorboard = TensorBoard(log_dir='./logs', histogram_freq=0, batch_size=32, wri
                           write_images=False, embeddings_freq=0, embeddings_layer_names=None, embeddings_metadata=None,
                           embeddings_data=None, update_freq='epoch')
 
-checkpoint = ModelCheckpoint(filepath='./logs/weights.hdf5', verbose=1, save_best_only=True)
+checkpoint = ModelCheckpoint(filepath='./logs/weights.hdf5', monitor='val_loss', verbose=1,
+                             save_best_only=True, save_weights_only=False, mode='auto', period=1)
 
-progressbar = ProgbarLogger(count_mode='samples', stateful_metrics=None)
+progressbar = ProgbarLogger(count_mode='steps', stateful_metrics=None)
 
 
 class LossHistory(Callback):

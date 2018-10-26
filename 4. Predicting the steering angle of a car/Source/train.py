@@ -22,12 +22,15 @@ sample_idx['test'] = [i for i in range(3, num_samples, 4)]
 
 # Set up a generator
 train_generator = generators.DataGenerator(df.loc[sample_idx['train']], data_dir='./data/data')
+valid_generator = generators.DataGenerator(df.loc[sample_idx['valid']], data_dir='./data/data')
 
 # Setup the CNN
 history = LossHistory()
 cnn = cnn()
 
 # Train CNN
-cnn.fit_generator(train_generator, epochs=1, steps_per_epoch=1,
+cnn.fit_generator(train_generator,
+                  validation_data=valid_generator,
+                  epochs=1, steps_per_epoch=1,
                   callbacks=[history, tensorboard, checkpoint, progressbar])
 print(history.losses)
