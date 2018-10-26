@@ -7,6 +7,23 @@ from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.utils import plot_model
+from keras.callbacks import TensorBoard, Callback, ModelCheckpoint
+
+
+# Callbacks
+tensor_board = TensorBoard(log_dir='./logs', histogram_freq=0, batch_size=32, write_graph=True, write_grads=False,
+                          write_images=False, embeddings_freq=0, embeddings_layer_names=None, embeddings_metadata=None,
+                          embeddings_data=None, update_freq='epoch')
+
+checkpointer = ModelCheckpoint(filepath='./logs/weights.hdf5', verbose=1, save_best_only=True)
+
+
+class LossHistory(Callback):
+    def on_train_begin(self, logs={}):
+        self.losses = []
+
+    def on_batch_end(self, batch, logs={}):
+        self.losses.append(logs.get('loss'))
 
 
 def cnn(input_shape=(256, 455, 1),

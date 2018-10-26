@@ -10,6 +10,9 @@ __pycache__
 # slides/
 .DS_Store
 *.zip
+*.JPG
+*.jpg
+*.txt
 
 # Module 1
 *db
@@ -24,19 +27,10 @@ lfw/
 *.caffemodel
 nn4.small2.v1.t7
 my_photos/
-*.JPG
-*.jpg
 
 # Module 3
 
 
-
 # Module 4
-data/
-
-
-
-
-
-
+logs/
 
