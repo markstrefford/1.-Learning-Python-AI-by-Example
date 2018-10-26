@@ -5,7 +5,7 @@ Train the CNN
 """
 
 import pandas as pd
-from model import model, LossHistory, tensor_board, check_point
+from model.model import cnn, LossHistory, tensorboard, checkpoint, progressbar
 from data import generators
 
 image_size = (256, 455)
@@ -25,8 +25,9 @@ train_generator = generators.DataGenerator(df.loc[sample_idx['train']], data_dir
 
 # Setup the CNN
 history = LossHistory()
-cnn = model.cnn()
+cnn = cnn()
 
 # Train CNN
-cnn.fit_generator(train_generator, epochs=1, steps_per_epoch=1, callbacks=[history, tensor_board, check_point])
+cnn.fit_generator(train_generator, epochs=1, steps_per_epoch=1,
+                  callbacks=[history, tensorboard, checkpoint, progressbar])
 print(history.losses)
