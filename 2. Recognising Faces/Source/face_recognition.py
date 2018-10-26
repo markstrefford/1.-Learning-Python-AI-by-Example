@@ -42,7 +42,7 @@ while True:
     cv2.imshow('Face Recognition', labelled_frame)
 
 
-    
+
 
 
 
