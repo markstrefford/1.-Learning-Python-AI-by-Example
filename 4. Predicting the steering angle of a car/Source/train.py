@@ -6,6 +6,7 @@ Train the CNN
 
 import pandas as pd
 import argparse
+import cv2
 from model.model import cnn, LossHistory, tensorboard, checkpoint, progressbar
 from data import generators
 
@@ -31,10 +32,12 @@ parser.add_argument('-debug', dest='debug',
                     choices=('Y', 'N'),
                     help='Debug (Y)es or (N)o')
 parser.add_argument('-limit-batches', dest='limit-batches',
-                    default=False,
+                    default=0,
+                    type=int,
                     help='Limit batches to train on ')
 parser.add_argument('-epochs', dest='epochs',
                     default=10,
+                    type=int,
                     help='Number of epochs')
 
 args = vars(parser.parse_args())
@@ -43,18 +46,21 @@ args = vars(parser.parse_args())
 debug = True if args['debug'] == 'Y' else False
 if debug:
     print('train.py: limit-batches={}, epochs={}'.format(args['limit-batches'], args['epochs']))
+    cv2.startWindowThread()
 
 # Set up a generator
 train_generator = generators.DataGenerator(df.loc[sample_idx['train']],
                                            data_dir='./data/data',
                                            image_size=image_size,
                                            debug=debug,
-                                           limit_batches=args['limit-batches'])
+                                           limit_batches=args['limit-batches'],
+                                           label='Train')
 valid_generator = generators.DataGenerator(df.loc[sample_idx['valid']],
                                            data_dir='./data/data',
                                            image_size=image_size,
                                            debug=debug,
-                                           limit_batches=args['limit-batches'])
+                                           limit_batches=args['limit-batches'],
+                                           label='Validate')
 
 # Setup the CNN
 history = LossHistory()
@@ -63,4 +69,7 @@ cnn = cnn(input_shape=(*image_size, 1), debug=debug)
 # Train CNN
 cnn.fit_generator(train_generator, validation_data=valid_generator, epochs=args['epochs'],
                   callbacks=[history, tensorboard, checkpoint, progressbar])
-print(history.losses)
+if debug:
+    print(history.losses)
+    cv2.destroyAllWindows()
+    cv2.waitKey(1)

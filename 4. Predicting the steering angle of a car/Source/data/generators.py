@@ -15,7 +15,7 @@ class DataGenerator(Sequence):
     Data Generator to load training, validation and test batches
     """
     def __init__(self, df: pd.DataFrame, data_dir='./data', image_size=(256, 455),
-                 batch_size=32, debug=False, limit_batches=0):
+                 batch_size=32, debug=False, limit_batches=0, label=None):
         """
         :param df:
         :param data_dir:
@@ -27,6 +27,7 @@ class DataGenerator(Sequence):
         self.batch_size = batch_size
         self.image_size = image_size
         self.channels = 1
+        self.label = label
         self.idx = 0
         self.batch_count = 0
         self.debug = debug
@@ -68,6 +69,11 @@ class DataGenerator(Sequence):
             resized = cv2.resize(image, (self.image_size[1], self.image_size[0]))
             X[i, :, :, 0] = resized
             y[i] = sample['angle']
+            if self.debug:
+                text = 'Frame: {} Angle: {}'.format(i, sample['angle'])
+                cv2.putText(image, text, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1, cv2.LINE_AA)
+                cv2.imshow(self.label, image)
+                cv2.waitKey(5) & 0xFF
         return X, y
 
 
