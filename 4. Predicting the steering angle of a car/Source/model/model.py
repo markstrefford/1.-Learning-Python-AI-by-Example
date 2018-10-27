@@ -37,7 +37,7 @@ def cnn(input_shape=(256, 455, 1),
         optimizer='adam',
         pool_size=(2, 2),
         dropout=0.25,
-        output=False):
+        debug=False):
 
     model = Sequential()
 
@@ -85,7 +85,7 @@ def cnn(input_shape=(256, 455, 1),
 
     model.compile(loss=loss, optimizer=optimizer)
 
-    if output:
+    if debug:
         plot_model(model, to_file='./model.png')
 
     return model

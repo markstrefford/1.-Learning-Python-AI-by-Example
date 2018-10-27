@@ -32,9 +32,9 @@ class DataGenerator(Sequence):
         self.debug = debug
         self.num_batches = int(np.floor(len(df) / self.batch_size))
         self.limit_batches = limit_batches if limit_batches < self.num_batches and limit_batches else self.num_batches
-        self.df = df.reset_index().loc[:self.limit_batches]
+        self.df = df.reset_index().loc[:self.limit_batches * self.batch_size]
         if debug:
-            print('DataGenerator(): num_batches = {}, bathc_size = {}, len(df) = {}'
+            print('DataGenerator(): num_batches = {}, batch_size = {}, len(df) = {}'
                   .format(self.limit_batches, self.batch_size, len(self.df)))
 
     def __len__(self):
