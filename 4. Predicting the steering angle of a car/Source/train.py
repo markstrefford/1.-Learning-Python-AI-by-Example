@@ -10,7 +10,7 @@ import cv2
 from model.model import cnn, LossHistory, tensorboard, checkpoint, progressbar
 from data import generators
 
-image_size = (78, 228)   # (128, 228)  # (256, 455)
+image_size = (78, 227, 3)   # (128, 228)  # (256, 455)
 
 # Prepare data for training, validation and test
 columns = ['image_name', 'angle', 'date', 'time']
@@ -64,7 +64,7 @@ valid_generator = generators.DataGenerator(df.loc[sample_idx['valid']],
 
 # Setup the CNN
 history = LossHistory()
-cnn = cnn(input_shape=(*image_size, 1), debug=debug)
+cnn = cnn(input_shape=image_size, debug=debug)
 
 # Train CNN
 cnn.fit_generator(train_generator, validation_data=valid_generator, epochs=args['epochs'],

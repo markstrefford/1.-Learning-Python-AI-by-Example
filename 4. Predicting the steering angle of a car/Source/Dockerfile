@@ -14,3 +14,6 @@ ENV LANG en_US.UTF-8
 RUN apt install -y python-opencv
 RUN pip install pandas
 RUN pip install keras
+RUN apt-get install -y graphviz
+RUN pip install pydot
+

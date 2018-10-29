@@ -8,7 +8,7 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.utils import plot_model
 from keras.callbacks import TensorBoard, Callback, ModelCheckpoint, ProgbarLogger
-
+from keras.optimizers import Adam
 
 # Callbacks
 tensorboard = TensorBoard(log_dir='./logs', histogram_freq=0, batch_size=32, write_graph=True, write_grads=False,
@@ -19,6 +19,8 @@ checkpoint = ModelCheckpoint(filepath='./logs/weights.hdf5', monitor='val_loss',
                              save_best_only=True, save_weights_only=False, mode='auto', period=1)
 
 progressbar = ProgbarLogger(count_mode='steps', stateful_metrics=None)
+
+adam = Adam(lr=0.0003)    # 0.001
 
 
 class LossHistory(Callback):
@@ -34,10 +36,14 @@ def cnn(input_shape=(256, 455, 1),
         padding='same',
         activation='relu',
         loss='mean_squared_error',
-        optimizer='adam',
+        optimizer=adam,
         pool_size=(2, 2),
         dropout=0.25,
         debug=False):
+
+    print('cnn(): Creating CNN with parameters:\n')
+    print('input_shape={}\nkernel_size={}\npool_size={}\ndropout={}\nactivation={}\noptimizer={}\nloss={}'
+          .format(input_shape, kernel_size, pool_size, dropout, activation, optimizer, loss))
 
     model = Sequential()
 
