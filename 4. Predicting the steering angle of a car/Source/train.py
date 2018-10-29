@@ -10,7 +10,7 @@ import cv2
 from model.model import cnn, LossHistory, tensorboard, checkpoint, progressbar
 from data import generators
 
-image_size = (128, 228)  # (256, 455)
+image_size = (78, 228)   # (128, 228)  # (256, 455)
 
 # Prepare data for training, validation and test
 columns = ['image_name', 'angle', 'date', 'time']

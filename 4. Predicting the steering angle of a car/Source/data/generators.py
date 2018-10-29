@@ -65,8 +65,9 @@ class DataGenerator(Sequence):
 
         for i, sample in batch_data.iterrows():
             image_path = os.path.join(self.data_dir, sample['image_name'])
-            image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-            resized = cv2.resize(image, (self.image_size[1], self.image_size[0]))
+            image = cv2.imread(image_path)    # , cv2.IMREAD_GRAYSCALE)
+            cropped = image[100:, :]
+            resized = cv2.resize(image, (int(cropped.shape[1] / 2, int(cropped.shape[0] / 2))))  # (self.image_size[1], self.image_size[0]))
             X[i, :, :, 0] = resized
             y[i] = sample['angle']
             if self.debug:

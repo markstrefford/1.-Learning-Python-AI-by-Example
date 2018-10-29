@@ -13,7 +13,7 @@ from keras.callbacks import TensorBoard, Callback, ModelCheckpoint, ProgbarLogge
 # Callbacks
 tensorboard = TensorBoard(log_dir='./logs', histogram_freq=0, batch_size=32, write_graph=True, write_grads=False,
                           write_images=False, embeddings_freq=0, embeddings_layer_names=None, embeddings_metadata=None,
-                          embeddings_data=None, update_freq='epoch')
+                          embeddings_data=None)   #, update_freq='epoch')
 
 checkpoint = ModelCheckpoint(filepath='./logs/weights.hdf5', monitor='val_loss', verbose=1,
                              save_best_only=True, save_weights_only=False, mode='auto', period=1)
@@ -68,17 +68,17 @@ def cnn(input_shape=(256, 455, 1),
     # 1st Fully Connected Layer
     model.add(Dense(100))
     model.add(Activation(activation))
-    model.add(Dropout(dropout))
+    # model.add(Dropout(dropout))
 
     # 2nd Fully Connected Layer
     model.add(Dense(50))
     model.add(Activation(activation))
-    model.add(Dropout(dropout))
+    # model.add(Dropout(dropout))
 
     # 3rd Fully Connected Layer
     model.add(Dense(10))
     model.add(Activation(activation))
-    model.add(Dropout(dropout))
+    # model.add(Dropout(dropout))
 
     # Output
     model.add(Dense(1))
