@@ -60,21 +60,26 @@ class DataGenerator(Sequence):
         :param index: list
         """
 
-        X = np.zeros((self.batch_size, *self.image_size, self.channels))
+        X = np.zeros((self.batch_size, *self.image_size))    # , self.channels))
         y = np.zeros((self.batch_size), dtype=float)
 
         for i, sample in batch_data.iterrows():
             image_path = os.path.join(self.data_dir, sample['image_name'])
             image = cv2.imread(image_path)    # , cv2.IMREAD_GRAYSCALE)
             cropped = image[100:, :]
-            resized = cv2.resize(image, (int(cropped.shape[1] / 2, int(cropped.shape[0] / 2))))  # (self.image_size[1], self.image_size[0]))
-            X[i, :, :, 0] = resized
+            resized = cv2.resize(cropped, (int(cropped.shape[1] / 2), int(cropped.shape[0] / 2)))  # (self.image_size[1], self.image_size[0]))
+            # print('resized.shape={}'.format(resized.shape))
+            X[i] = resized  # X[i, :, :, :] = resized
+            # print('X[i].shape={}'.format(X[i].shape))
             y[i] = sample['angle']
             if self.debug:
                 text = 'Frame: {} Angle: {}'.format(i, sample['angle'])
-                cv2.putText(image, text, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1, cv2.LINE_AA)
-                cv2.imshow(self.label, image)
-                cv2.waitKey(5) & 0xFF
+                cv2.putText(resized, text, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1, cv2.LINE_AA)
+                # cv2.imshow(self.label, image)
+                # cv2.waitKey(5) & 0xFF
+                file = '../logs/images/{}-{}-{}'.format(self.label, i, sample['image_name'])
+                print('Writing debug image to {}'.format(file))
+                cv2.imwrite(file, resized)
         return X, y
 
 
