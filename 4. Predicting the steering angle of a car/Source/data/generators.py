@@ -59,8 +59,7 @@ class DataGenerator(Sequence):
         Generates data containing batch_size samples
         :param index: list
         """
-
-        X = np.zeros((self.batch_size, *self.image_size))   
+        X = np.zeros((self.batch_size, *self.image_size))
         y = np.zeros((self.batch_size), dtype=float)
 
         for i, sample in batch_data.iterrows():

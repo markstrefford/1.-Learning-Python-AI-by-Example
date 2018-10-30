@@ -87,6 +87,6 @@ def cnn(input_shape=(256, 455, 1),
     model.compile(loss=loss, optimizer=optimizer)
 
     if debug:
-        plot_model(model, to_file='./model.png')
+        plot_model(model, to_file='./logs/model.png')
 
     return model
