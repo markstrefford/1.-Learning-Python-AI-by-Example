@@ -31,6 +31,10 @@ parser.add_argument('-debug', dest='debug',
                     default='N',
                     choices=('Y', 'N'),
                     help='Debug (Y)es or (N)o')
+parser.add_argument('-batch-size', dest='batch-size',
+                    default=32,
+                    type=int,
+                    help='Batch size (suggest 32 - 128)')
 parser.add_argument('-limit-batches', dest='limit-batches',
                     default=0,
                     type=int,
@@ -45,7 +49,8 @@ args = vars(parser.parse_args())
 # Setup debugging
 debug = True if args['debug'] == 'Y' else False
 if debug:
-    print('train.py: limit-batches={}, epochs={}'.format(args['limit-batches'], args['epochs']))
+    print('train.py: batch-size={}, limit-batches={}, epochs={}'
+          .format(args['batch-size'], args['limit-batches'], args['epochs']))
     cv2.startWindowThread()
 
 # Set up a generator
@@ -53,12 +58,14 @@ train_generator = generators.DataGenerator(df.loc[sample_idx['train']],
                                            data_dir='./data/data',
                                            image_size=image_size,
                                            debug=debug,
+                                           batch_size=args['batch-size'],
                                            limit_batches=args['limit-batches'],
                                            label='Train')
 valid_generator = generators.DataGenerator(df.loc[sample_idx['valid']],
                                            data_dir='./data/data',
                                            image_size=image_size,
                                            debug=debug,
+                                           batch_size=args['batch-size'],
                                            limit_batches=args['limit-batches'],
                                            label='Validate')
 
