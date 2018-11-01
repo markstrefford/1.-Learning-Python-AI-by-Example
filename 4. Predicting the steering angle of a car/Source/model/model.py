@@ -9,14 +9,17 @@ from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.utils import plot_model
 from keras.callbacks import TensorBoard, Callback, ModelCheckpoint, ProgbarLogger
 from keras.optimizers import Adam
+from datetime import datetime
 
 # Callbacks
 tensorboard = TensorBoard(log_dir='./logs', histogram_freq=0, batch_size=32, write_graph=True, write_grads=False,
                           write_images=False, embeddings_freq=0, embeddings_layer_names=None, embeddings_metadata=None,
                           embeddings_data=None)   #, update_freq='epoch')
 
-checkpoint = ModelCheckpoint(filepath='./logs/weights.hdf5', monitor='val_loss', verbose=1,
-                             save_best_only=True, save_weights_only=False, mode='auto', period=1)
+checkpoint = ModelCheckpoint(filepath='./logs/weights-{}.hdf5'.format(datetime.now().strftime('%Y-%m-%d-%H-%M-%S')),
+                             monitor='val_loss', verbose=1,
+                             save_best_only=True, save_weights_only=False,
+                             mode='auto', period=1)
 
 progressbar = ProgbarLogger(count_mode='steps', stateful_metrics=None)
 

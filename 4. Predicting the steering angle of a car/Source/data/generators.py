@@ -73,10 +73,10 @@ class DataGenerator(Sequence):
             y[i] = sample['angle']
             if self.debug:
                 text = 'Frame: {} Angle: {}'.format(i, sample['angle'])
-                cv2.putText(resized, text, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1, cv2.LINE_AA)
+                # cv2.putText(resized, text, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1, cv2.LINE_AA)
                 file = './logs/images/{}-{}-{}'.format(self.label, i, sample['image_name'])
-                print('Writing debug image to {}'.format(file))
-                cv2.imwrite(file, resized)
+                # print('Writing debug image to {}'.format(file))
+                # cv2.imwrite(file, resized)
         return X, y
 
 
