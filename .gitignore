@@ -33,5 +33,5 @@ my_photos/
 
 
 # Module 4
-logs/
+logs/events.out*
 
