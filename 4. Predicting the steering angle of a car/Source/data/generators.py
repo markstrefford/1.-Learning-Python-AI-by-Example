@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 import cv2
 import os
+import scipy.misc
 from keras.utils import Sequence
 
 
@@ -70,7 +71,7 @@ class DataGenerator(Sequence):
             # print('resized.shape={}'.format(resized.shape))
             X[i] = resized  # X[i, :, :, :] = resized
             # print('X[i].shape={}'.format(X[i].shape))
-            y[i] = sample['angle']
+            y[i] = float(sample['angle']) * scipy.pi / 180   # Force into radians
             if self.debug:
                 text = 'Frame: {} Angle: {}'.format(i, sample['angle'])
                 # cv2.putText(resized, text, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1, cv2.LINE_AA)

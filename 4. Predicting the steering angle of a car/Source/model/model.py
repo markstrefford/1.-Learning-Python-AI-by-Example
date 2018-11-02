@@ -35,13 +35,13 @@ class LossHistory(Callback):
 
 
 def cnn(input_shape=(256, 455, 1),
-        kernel_size=(5, 5),
+        kernel_size=(3, 3),
         padding='same',
-        activation='relu',
+        activation='elu',     # 'relu'
         loss='mean_squared_error',
         optimizer=adam,
         pool_size=(2, 2),
-        dropout=0.25,
+        dropout=0.5,
         debug=False):
 
     print('cnn(): Creating CNN with parameters:\n')
@@ -53,22 +53,22 @@ def cnn(input_shape=(256, 455, 1),
     # First convolutional layer
     model.add(Conv2D(32, kernel_size, padding=padding, input_shape=input_shape))
     model.add(Activation(activation))
+    model.add(MaxPooling2D(pool_size=pool_size))
 
     # 2nd conv layer
     model.add(Conv2D(32, kernel_size, padding=padding))
     model.add(Activation(activation))
-
     model.add(MaxPooling2D(pool_size=pool_size))
     # model.add(Dropout(dropout))
 
     # 3rd conv layer
     model.add(Conv2D(64, kernel_size, padding=padding))
     model.add(Activation(activation))
+    model.add(MaxPooling2D(pool_size=pool_size))
 
     # 4th conv layer
     model.add(Conv2D(128, kernel_size, padding=padding))
     model.add(Activation(activation))
-
     model.add(MaxPooling2D(pool_size=pool_size))
     # model.add(Dropout(dropout))
 
@@ -90,6 +90,7 @@ def cnn(input_shape=(256, 455, 1),
     model.compile(loss=loss, optimizer=optimizer)
 
     if debug:
+        print(model.summary())
         plot_model(model, to_file='./logs/model.png')
 
     return model

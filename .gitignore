@@ -13,6 +13,7 @@ __pycache__
 *.JPG
 *.jpg
 *.txt
+*.gz
 
 # Module 1
 *db
