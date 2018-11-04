@@ -65,14 +65,14 @@ class DataGenerator(Sequence):
         y = np.zeros((self.batch_size), dtype=float)
 
         for i, sample in batch_data.iterrows():
+            if self.debug:
+                print('{}: Loading image {}, steering angle {}'.format(i, sample['image_name'], sample['angle']))
             image_path = os.path.join(self.data_dir, sample['image_name'])
             image = cv2.imread(image_path)    # , cv2.IMREAD_GRAYSCALE)
             cropped = image[100:, :]
             resized = cv2.resize(cropped, (int(cropped.shape[1] / 2), int(cropped.shape[0] / 2)))  # (self.image_size[1], self.image_size[0]))
-            # print('resized.shape={}'.format(resized.shape))
-            X[i] = resized  # X[i, :, :, :] = resized
-            # print('X[i].shape={}'.format(X[i].shape))
-            y[i] = float(sample['angle']) * scipy.pi / 180   # Force into radians
+            X[i] = resized
+            y[i] = sample['angle']
             if self.debug:
                 text = 'Frame: {} Angle: {}'.format(i, sample['angle'])
                 # cv2.putText(resized, text, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1, cv2.LINE_AA)
