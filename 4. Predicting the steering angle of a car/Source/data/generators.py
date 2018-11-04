@@ -15,8 +15,8 @@ class DataGenerator(Sequence):
     """
     Data Generator to load training, validation and test batches
     """
-    def __init__(self, df: pd.DataFrame, data_dir='./data', image_size=(256, 455),
-                 batch_size=32, debug=False, limit_batches=0, label=None):
+    def __init__(self, df: pd.DataFrame, data_dir='./data', data_file='./data/data.txt',
+                 image_size=(256, 455), batch_size=32, debug=False, limit_batches=0, label=None):
         """
         :param df:
         :param data_dir:
@@ -25,6 +25,7 @@ class DataGenerator(Sequence):
         """
 
         self.data_dir = data_dir
+        self.data_file = data_file
         self.batch_size = batch_size
         self.image_size = image_size
         self.channels = 1

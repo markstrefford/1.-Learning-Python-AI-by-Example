@@ -12,16 +12,6 @@ from data import generators
 
 image_size = (78, 227, 3)   # (128, 228)  # (256, 455)
 
-# Prepare data for training, validation and test
-columns = ['image_name', 'angle', 'date', 'time']
-df = pd.read_csv('./data/data.txt', names=columns, delimiter=' ')
-
-sample_idx = {}
-num_samples = len(df)
-sample_idx['train'] = [i for i in range(0, num_samples, 2)]
-sample_idx['valid'] = [i for i in range(1, num_samples, 4)]
-sample_idx['test'] = [i for i in range(3, num_samples, 4)]
-
 # Process command line arguments if supplied
 parser = argparse.ArgumentParser(
         description='Train our cnn to predict steering angles')
@@ -43,14 +33,27 @@ parser.add_argument('-epochs', dest='epochs',
                     default=10,
                     type=int,
                     help='Number of epochs')
+parser.add_argument('-data-file', dest='data-file',
+                    default='./data/data.txt',
+                    help='File containing list of images and steering angles')
 
 args = vars(parser.parse_args())
+
+# Prepare data for training, validation and test
+columns = ['image_name', 'angle', 'date', 'time']
+df = pd.read_csv(args['data-file'], names=columns, delimiter=' ')
+
+sample_idx = {}
+num_samples = len(df)
+sample_idx['train'] = [i for i in range(0, num_samples, 2)]
+sample_idx['valid'] = [i for i in range(1, num_samples, 4)]
+sample_idx['test'] = [i for i in range(3, num_samples, 4)]
 
 # Setup debugging
 debug = True if args['debug'] == 'Y' else False
 if debug:
-    print('train.py: batch-size={}, limit-batches={}, epochs={}'
-          .format(args['batch-size'], args['limit-batches'], args['epochs']))
+    print('train.py: batch-size={}, limit-batches={}, epochs={}, data-file={}'
+          .format(args['batch-size'], args['limit-batches'], args['epochs'], args['data-file']))
     cv2.startWindowThread()
 
 # Set up a generator
