@@ -38,7 +38,7 @@ args = vars(parser.parse_args())
 columns = ['image_name', 'angle', 'date', 'time']
 df = pd.read_csv(args['data-file'], names=columns, delimiter=' ')
 
-steering_wheel_img = cv2.imread('./data/steering_wheel_image.jpg')
+steering_wheel_img = cv2.imread('./data/steering_wheel_image.png')
 steering_wheel_w, steering_wheel_h, _ = steering_wheel_img.shape
 
 smoothed_angle = 0
@@ -56,17 +56,22 @@ for i, sample in df.iterrows():
     delta = angle - actual
     # Make smooth angle transitions by turning the steering wheel based on the difference of the current angle
     # and the predicted angle
-    smoothed_angle += 0.2 * pow(abs((angle - smoothed_angle)), 2.0 / 3.0) * (angle - smoothed_angle) / abs(angle - smoothed_angle)
+    if angle:
+        smoothed_angle += 0.2 * pow(abs((angle - smoothed_angle)), 2.0 / 3.0) * (angle - smoothed_angle) \
+                          / abs(angle - smoothed_angle)
     M = cv2.getRotationMatrix2D((steering_wheel_h/2,steering_wheel_w/2),-smoothed_angle,1)
     dst = cv2.warpAffine(steering_wheel_img,M,(steering_wheel_h,steering_wheel_w))
     # Create single image to display - road on the left, rotated steering wheel on the right
-    display_img = np.zeros((image.shape[1], image.shape[0] + steering_wheel_w, 3))
-    display_img[0:, 0:image.shape[0], :] = image
+    display_img = np.zeros((image.shape[0], image.shape[1]  + steering_wheel_w, 3))
+    display_img[0:, 0:image.shape[1], :] = image
     display_img[0:, image.shape[1]:, :] = dst
     # call("clear")
-    cv2.putText(image, 'Predicted angle = {}'.format(angle), (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 0), 1, cv2.LINE_AA)
-    cv2.putText(image, 'Actual angle = {}'.format(actual), (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 0), 1, cv2.LINE_AA)
-    cv2.putText(image, 'Delta (predicted - actual) = {}'.format(delta), (30, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 0), 1, cv2.LINE_AA)
+    cv2.putText(image, 'Predicted angle = {}'.format(angle), (10, 20),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 0), 1, cv2.LINE_AA)
+    cv2.putText(image, 'Actual angle = {}'.format(actual), (20, 20),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 0), 1, cv2.LINE_AA)
+    cv2.putText(image, 'Delta (predicted - actual) = {}'.format(delta), (30, 20),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 0), 1, cv2.LINE_AA)
     print('Predicted steering angle: {}'.format(angle))
     print('Actual steering angle: {}'.format(sample['angle']))
     print('Delta: {}'.format(angle - sample['angle']))
