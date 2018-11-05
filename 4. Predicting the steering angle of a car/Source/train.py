@@ -7,6 +7,7 @@ Train the CNN
 import pandas as pd
 import argparse
 import cv2
+from sklearn.utils import shuffle
 from model.model import cnn, LossHistory, tensorboard, checkpoint, progressbar
 from data import generators
 
@@ -41,7 +42,7 @@ args = vars(parser.parse_args())
 
 # Prepare data for training, validation and test
 columns = ['image_name', 'angle', 'date', 'time']
-df = pd.read_csv(args['data-file'], names=columns, delimiter=' ')
+df = pd.read_csv(args['data-file'], names=columns, delimiter=' ').shuffle()
 
 sample_idx = {}
 num_samples = len(df)

@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 import os
 import argparse
+import scipy.misc
 from subprocess import call
 from model.model import cnn
 
@@ -32,8 +33,8 @@ parser.add_argument('-data-dir', dest='data-dir',
 
 args = vars(parser.parse_args())
 
-# model = cnn(input_shape=image_size)
-# model.load_weights(args['model-file'])
+model = cnn(input_shape=image_size)
+model.load_weights(args['model-file'])
 
 columns = ['image_name', 'angle', 'date', 'time']
 df = pd.read_csv(args['data-file'], names=columns, delimiter=' ')
@@ -51,7 +52,7 @@ for i, sample in df.iterrows():
     cropped = image[100:, :]
     resized = cv2.resize(cropped, (int(cropped.shape[1] / 2), int(cropped.shape[0] / 2)))
     # Determine predicted angle and delta from actual angle  
-    angle = 0 # model.predict([resized])
+    angle = model.predict(resized.reshape(1, *resized.shape)) / scipy.pi * 180
     actual = sample['angle']
     delta = angle - actual
     # Make smooth angle transitions by turning the steering wheel based on the difference of the current angle
