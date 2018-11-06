@@ -23,7 +23,9 @@ checkpoint = ModelCheckpoint(filepath='./logs/weights-{}.hdf5'.format(datetime.n
 
 progressbar = ProgbarLogger(count_mode='steps', stateful_metrics=None)
 
-adam = Adam(lr=0.0003)    # 0.001
+# Optimizer and learning rate
+lr = 0.0003
+adam = Adam(lr=lr)
 
 
 class LossHistory(Callback):
@@ -34,10 +36,10 @@ class LossHistory(Callback):
         self.losses.append(logs.get('loss'))
 
 
-def cnn(input_shape=(256, 455, 3),
+def cnn(input_shape=(66, 200, 3),
         kernel_size=(5, 5),
         padding='same',
-        activation='elu',     # 'relu'
+        activation='elu',
         loss='mean_squared_error',
         optimizer=adam,
         pool_size=(2, 2),
@@ -45,29 +47,29 @@ def cnn(input_shape=(256, 455, 3),
         debug=False):
 
     print('cnn(): Creating CNN with parameters:\n')
-    print('image_shap={}\nkernel_size={}\npool_size={}\ndropout={}\nactivation={}\noptimizer={}\nloss={}'
+    print('image_shape={}\nkernel_size={}\npool_size={}\ndropout={}\nactivation={}\noptimizer={}\nloss={}'
           .format(input_shape, kernel_size, pool_size, dropout, activation, optimizer, loss))
 
     model = Sequential()
 
     # First convolutional layer
-    model.add(Conv2D(32, kernel_size, padding=padding, input_shape=input_shape))
+    model.add(Conv2D(24, kernel_size, padding=padding, input_shape=input_shape))
     model.add(Activation(activation))
     model.add(MaxPooling2D(pool_size=pool_size))
 
     # 2nd conv layer
-    model.add(Conv2D(32, kernel_size, padding=padding))
+    model.add(Conv2D(36, kernel_size, padding=padding))
     model.add(Activation(activation))
     model.add(MaxPooling2D(pool_size=pool_size))
     # model.add(Dropout(dropout))
 
     # 3rd conv layer
-    model.add(Conv2D(64, kernel_size, padding=padding))
+    model.add(Conv2D(48, kernel_size, padding=padding))
     model.add(Activation(activation))
     model.add(MaxPooling2D(pool_size=pool_size))
 
     # 4th conv layer
-    model.add(Conv2D(128, kernel_size, padding=padding))
+    model.add(Conv2D(64, kernel_size, padding=padding))
     model.add(Activation(activation))
     model.add(MaxPooling2D(pool_size=pool_size))
     # model.add(Dropout(dropout))
@@ -75,17 +77,18 @@ def cnn(input_shape=(256, 455, 3),
     model.add(Flatten())
 
     # 1st Fully Connected Layer
-    model.add(Dense(1024))
+    model.add(Dense(100))
     model.add(Activation(activation))
     model.add(Dropout(dropout))
 
     # 2nd Fully Connected Layer
-    model.add(Dense(512))
+    model.add(Dense(50))
     model.add(Activation(activation))
     model.add(Dropout(dropout))
 
     # Output
     model.add(Dense(1))
+    model.add(Activation('linear'))
 
     model.compile(loss=loss, optimizer=optimizer)
 

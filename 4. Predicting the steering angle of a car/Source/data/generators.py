@@ -11,12 +11,29 @@ import scipy.misc
 from keras.utils import Sequence
 
 
+def get_image(image_path, crop_position=100, image_size=(66, 200, 3), debug=False):
+    """
+    Load an image and return resized image for training and actual image for viewing
+    :param image_path: str
+    :param crop_position: int
+    :param image_size: tuple
+    :param debug: string
+    :return:
+    """
+    image = cv2.imread(image_path)
+    cropped = image[crop_position:, :]
+    resize_to = (int(cropped.shape[1] / 2), int(cropped.shape[0] / 2)) if not image_size \
+        else (image_size[1], image_size[0])
+    resized = cv2.resize(cropped, resize_to)
+    return image, resized
+
+
 class DataGenerator(Sequence):
     """
     Data Generator to load training, validation and test batches
     """
     def __init__(self, df: pd.DataFrame, data_dir='./data', data_file='./data/data.txt',
-                 image_size=(256, 455), batch_size=32, limit_batches=0,
+                 image_size=(256, 455, 3), batch_size=32, limit_batches=0,
                  label=None, debug=False, log_images=False):
         """
         :param df:
@@ -70,13 +87,14 @@ class DataGenerator(Sequence):
             # if self.debug:
             #     print('{}: Loading image {}, steering angle {}'.format(i, sample['image_name'], sample['angle']))
             image_path = os.path.join(self.data_dir, sample['image_name'])
-            image = cv2.imread(image_path)    # , cv2.IMREAD_GRAYSCALE)
-            cropped = image[100:, :]
-            resize_to = (int(cropped.shape[1] / 2), int(cropped.shape[0] / 2)) if not self.image_size \
-                else (self.image_size[1], self.image_size[0])
-            resized = cv2.resize(cropped, resize_to)  # (self.image_size[1], self.image_size[0]))
+            image, resized = get_image(image_path)
+            # image = cv2.imread(image_path)    # , cv2.IMREAD_GRAYSCALE)
+            # cropped = image[100:, :]
+            # resize_to = (int(cropped.shape[1] / 2), int(cropped.shape[0] / 2)) if not self.image_size \
+            #     else (self.image_size[1], self.image_size[0])
+            # resized = cv2.resize(cropped, resize_to)  # (self.image_size[1], self.image_size[0]))
             X[i] = resized
-            y[i] = float(sample['angle']) * scipy.pi / 180   # Force into radians  # sample['angle']
+            y[i] = float(sample['angle']) * scipy.pi / 180   # Force into radians
             if self.log_images:
                 text = 'Frame: {} Angle: {}'.format(i, sample['angle'])
                 cv2.putText(resized, text, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1, cv2.LINE_AA)

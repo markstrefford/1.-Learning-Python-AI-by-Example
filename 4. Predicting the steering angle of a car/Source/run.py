@@ -11,8 +11,9 @@ import argparse
 import scipy.misc
 from subprocess import call
 from model.model import cnn
+from data.generators import get_image
 
-image_size = (78, 227, 3)
+image_size = (66, 200, 3)
 
 # Process command line arguments if supplied
 parser = argparse.ArgumentParser(
@@ -47,11 +48,13 @@ cv2.startWindowThread()
 
 for i, sample in df.iterrows():
     image_path = os.path.join(args['data-dir'], sample['image_name'])
-    image = cv2.imread(image_path)
+    image, resized = get_image(image_path, image_size=image_size)
+    # print('Loaded image {}, shape = {}'.format(image_path, image.shape))
+    cv2.imshow('image', image)
     # Set up image to predict steering angle
-    cropped = image[100:, :]
-    resized = cv2.resize(cropped, (int(cropped.shape[1] / 2), int(cropped.shape[0] / 2)))
-    # Determine predicted angle and delta from actual angle  
+    # cropped = image[100:, :]
+    # resized = cv2.resize(cropped, (int(cropped.shape[1] / 2), int(cropped.shape[0] / 2)))
+    # Determine predicted angle and delta from actual angle
     angle = model.predict(resized.reshape(1, *resized.shape)) / scipy.pi * 180
     actual = sample['angle']
     delta = angle - actual
@@ -62,6 +65,7 @@ for i, sample in df.iterrows():
                           / abs(angle - smoothed_angle)
     M = cv2.getRotationMatrix2D((steering_wheel_h/2,steering_wheel_w/2),-smoothed_angle,1)
     dst = cv2.warpAffine(steering_wheel_img,M,(steering_wheel_h,steering_wheel_w))
+    cv2.imshow('angle', dst)
     # Create single image to display - road on the left, rotated steering wheel on the right
     display_img = np.zeros((image.shape[0], image.shape[1]  + steering_wheel_w, 3))
     display_img[0:, 0:image.shape[1], :] = image
@@ -77,7 +81,10 @@ for i, sample in df.iterrows():
     print('Actual steering angle: {}'.format(sample['angle']))
     print('Delta: {}'.format(angle - sample['angle']))
     cv2.imshow("Steering Demo", display_img)
+    k = cv2.waitKey(1)
 
 cv2.destroyAllWindows()
+cv2.waitKey(1)
+
 
 
