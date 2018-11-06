@@ -11,7 +11,7 @@ from sklearn.utils import shuffle
 from model.model import cnn, LossHistory, tensorboard, checkpoint, progressbar
 from data import generators
 
-image_size = (78, 227, 3)   # (128, 228)  # (256, 455)
+image_size = (66, 200, 3)   # (78, 227, 3)
 
 # Process command line arguments if supplied
 parser = argparse.ArgumentParser(
@@ -37,12 +37,15 @@ parser.add_argument('-epochs', dest='epochs',
 parser.add_argument('-data-file', dest='data-file',
                     default='./data/data.txt',
                     help='File containing list of images and steering angles')
-
+parser.add_argument('-log-images', dest='log-images',
+                    default='N',
+                    choices=('Y', 'N'),
+                    help='Log training images to disk (Y)es or (N)o')
 args = vars(parser.parse_args())
 
 # Prepare data for training, validation and test
 columns = ['image_name', 'angle', 'date', 'time']
-df = pd.read_csv(args['data-file'], names=columns, delimiter=' ').shuffle()
+df = pd.read_csv(args['data-file'], names=columns, delimiter=' ').sample(frac=1).reset_index(drop=True)
 
 sample_idx = {}
 num_samples = len(df)
@@ -51,6 +54,7 @@ sample_idx['valid'] = [i for i in range(1, num_samples, 4)]
 sample_idx['test'] = [i for i in range(3, num_samples, 4)]
 
 # Setup debugging
+log_images = True if args['log-images'] == 'Y' else False
 debug = True if args['debug'] == 'Y' else False
 if debug:
     print('train.py: batch-size={}, limit-batches={}, epochs={}, data-file={}'
@@ -62,6 +66,7 @@ train_generator = generators.DataGenerator(df.loc[sample_idx['train']],
                                            data_dir='./data/data',
                                            image_size=image_size,
                                            debug=debug,
+                                           log_images=log_images,
                                            batch_size=args['batch-size'],
                                            limit_batches=args['limit-batches'],
                                            label='Train')
@@ -69,6 +74,7 @@ valid_generator = generators.DataGenerator(df.loc[sample_idx['valid']],
                                            data_dir='./data/data',
                                            image_size=image_size,
                                            debug=debug,
+                                           log_images=log_images,
                                            batch_size=args['batch-size'],
                                            limit_batches=args['limit-batches'],
                                            label='Validate')

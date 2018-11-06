@@ -34,8 +34,8 @@ class LossHistory(Callback):
         self.losses.append(logs.get('loss'))
 
 
-def cnn(input_shape=(256, 455, 1),
-        kernel_size=(3, 3),
+def cnn(input_shape=(256, 455, 3),
+        kernel_size=(5, 5),
         padding='same',
         activation='elu',     # 'relu'
         loss='mean_squared_error',
@@ -45,7 +45,7 @@ def cnn(input_shape=(256, 455, 1),
         debug=False):
 
     print('cnn(): Creating CNN with parameters:\n')
-    print('input_shape={}\nkernel_size={}\npool_size={}\ndropout={}\nactivation={}\noptimizer={}\nloss={}'
+    print('image_shap={}\nkernel_size={}\npool_size={}\ndropout={}\nactivation={}\noptimizer={}\nloss={}'
           .format(input_shape, kernel_size, pool_size, dropout, activation, optimizer, loss))
 
     model = Sequential()

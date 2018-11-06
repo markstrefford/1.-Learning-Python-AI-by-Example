@@ -16,7 +16,8 @@ class DataGenerator(Sequence):
     Data Generator to load training, validation and test batches
     """
     def __init__(self, df: pd.DataFrame, data_dir='./data', data_file='./data/data.txt',
-                 image_size=(256, 455), batch_size=32, debug=False, limit_batches=0, label=None):
+                 image_size=(256, 455), batch_size=32, limit_batches=0,
+                 label=None, debug=False, log_images=False):
         """
         :param df:
         :param data_dir:
@@ -33,6 +34,7 @@ class DataGenerator(Sequence):
         self.idx = 0
         self.batch_count = 0
         self.debug = debug
+        self.log_images = log_images
         self.num_batches = int(np.floor(len(df) / self.batch_size))
         self.limit_batches = limit_batches if limit_batches < self.num_batches and limit_batches else self.num_batches
         self.df = df.reset_index().loc[:self.limit_batches * self.batch_size]
@@ -70,15 +72,17 @@ class DataGenerator(Sequence):
             image_path = os.path.join(self.data_dir, sample['image_name'])
             image = cv2.imread(image_path)    # , cv2.IMREAD_GRAYSCALE)
             cropped = image[100:, :]
-            resized = cv2.resize(cropped, (int(cropped.shape[1] / 2), int(cropped.shape[0] / 2)))  # (self.image_size[1], self.image_size[0]))
+            resize_to = (int(cropped.shape[1] / 2), int(cropped.shape[0] / 2)) if not self.image_size \
+                else (self.image_size[1], self.image_size[0])
+            resized = cv2.resize(cropped, resize_to)  # (self.image_size[1], self.image_size[0]))
             X[i] = resized
             y[i] = float(sample['angle']) * scipy.pi / 180   # Force into radians  # sample['angle']
-            if self.debug:
+            if self.log_images:
                 text = 'Frame: {} Angle: {}'.format(i, sample['angle'])
-                # cv2.putText(resized, text, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1, cv2.LINE_AA)
+                cv2.putText(resized, text, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1, cv2.LINE_AA)
                 file = './logs/images/{}-{}-{}'.format(self.label, i, sample['image_name'])
-                # print('Writing debug image to {}'.format(file))
-                # cv2.imwrite(file, resized)
+                print('Writing debug image to {}'.format(file))
+                cv2.imwrite(file, resized)
         return X, y
 
 
