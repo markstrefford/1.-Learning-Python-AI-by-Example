@@ -60,7 +60,7 @@ for i, sample in df.iterrows():
     # and the predicted angle
     if angle:
         smoothed_angle += 0.2 * pow(abs((angle - smoothed_angle)), 2.0 / 3.0) * (angle - smoothed_angle) \
-                          / abs(angle - smoothed_angle)
+                          / abs(angle - smoothed_angle) 
     M = cv2.getRotationMatrix2D((steering_wheel_h/2,steering_wheel_w/2),-smoothed_angle,1)
     dst = cv2.warpAffine(steering_wheel_img,M,(steering_wheel_h,steering_wheel_w))
 
