@@ -47,17 +47,15 @@ smoothed_angle = 0
 cv2.startWindowThread()
 
 for i, sample in df.iterrows():
+    # Load the image
     image_path = os.path.join(args['data-dir'], sample['image_name'])
     image, resized = get_image(image_path, image_size=image_size)
-    # print('Loaded image {}, shape = {}'.format(image_path, image.shape))
-    cv2.imshow('image', image)
-    # Set up image to predict steering angle
-    # cropped = image[100:, :]
-    # resized = cv2.resize(cropped, (int(cropped.shape[1] / 2), int(cropped.shape[0] / 2)))
-    # Determine predicted angle and delta from actual angle
-    angle = model.predict(resized.reshape(1, *resized.shape)) / scipy.pi * 180
+
+    # Get predicted steering angle from this frame
+    angle = model.predict(resized.reshape(1, *resized.shape))[0][0] / scipy.pi * 180
     actual = sample['angle']
     delta = angle - actual
+
     # Make smooth angle transitions by turning the steering wheel based on the difference of the current angle
     # and the predicted angle
     if angle:
@@ -65,21 +63,22 @@ for i, sample in df.iterrows():
                           / abs(angle - smoothed_angle)
     M = cv2.getRotationMatrix2D((steering_wheel_h/2,steering_wheel_w/2),-smoothed_angle,1)
     dst = cv2.warpAffine(steering_wheel_img,M,(steering_wheel_h,steering_wheel_w))
-    cv2.imshow('angle', dst)
+
     # Create single image to display - road on the left, rotated steering wheel on the right
-    display_img = np.zeros((image.shape[0], image.shape[1]  + steering_wheel_w, 3))
-    display_img[0:, 0:image.shape[1], :] = image
-    display_img[0:, image.shape[1]:, :] = dst
-    # call("clear")
-    cv2.putText(image, 'Predicted angle = {}'.format(angle), (10, 20),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 0), 1, cv2.LINE_AA)
-    cv2.putText(image, 'Actual angle = {}'.format(actual), (20, 20),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 0), 1, cv2.LINE_AA)
-    cv2.putText(image, 'Delta (predicted - actual) = {}'.format(delta), (30, 20),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 0), 1, cv2.LINE_AA)
-    print('Predicted steering angle: {}'.format(angle))
-    print('Actual steering angle: {}'.format(sample['angle']))
-    print('Delta: {}'.format(angle - sample['angle']))
+    display_img = np.zeros((image.shape[0], image.shape[1] + steering_wheel_w, 3), dtype=np.uint8)
+    display_img[0:image.shape[0], 0:image.shape[1], 0:3] = image
+    display_img[0:dst.shape[0], image.shape[1]:(image.shape[1] + dst.shape[1]), 0:3] = dst
+    cv2.putText(display_img, 'Predicted angle = {0:.2f}'.format(angle), (10, 20),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 255), 1, cv2.LINE_AA)
+    cv2.putText(display_img, 'Actual angle = {0:.2f}'.format(actual), (10, 30),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 255), 1, cv2.LINE_AA)
+    cv2.putText(display_img, 'Delta (predicted - actual) = {0:.2f}'.format(delta), (10, 40),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 255), 1, cv2.LINE_AA)
+
+    # Write the image to the output directory so we can create a video of this later
+    cv2.imwrite(os.path.join('./output', sample['image_name']), display_img)
+
+    # Display the image
     cv2.imshow("Steering Demo", display_img)
     k = cv2.waitKey(1)
 
