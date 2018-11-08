@@ -60,14 +60,14 @@ for i, sample in df.iterrows():
     # and the predicted angle
     if angle:
         smoothed_angle += 0.2 * pow(abs((angle - smoothed_angle)), 2.0 / 3.0) * (angle - smoothed_angle) \
-                          / abs(angle - smoothed_angle) 
+                          / abs(angle - smoothed_angle)
     M = cv2.getRotationMatrix2D((steering_wheel_h/2,steering_wheel_w/2),-smoothed_angle,1)
     dst = cv2.warpAffine(steering_wheel_img,M,(steering_wheel_h,steering_wheel_w))
 
     # Create single image to display - road on the left, rotated steering wheel on the right
-    display_img = np.zeros((image.shape[0], image.shape[1] + steering_wheel_w, 3), dtype=np.uint8)
+    display_img = np.zeros((image.shape[0], image.shape[1] + steering_wheel_w + 1, 3), dtype=np.uint8)
     display_img[0:image.shape[0], 0:image.shape[1], 0:3] = image
-    display_img[0:dst.shape[0], image.shape[1]:(image.shape[1] + dst.shape[1]), 0:3] = dst
+    display_img[0:dst.shape[0], (image.shape[1] + 1):(image.shape[1] + dst.shape[1] + 1), 0:3] = dst
     cv2.putText(display_img, 'Predicted angle = {0:.2f}'.format(angle), (10, 20),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 255), 1, cv2.LINE_AA)
     cv2.putText(display_img, 'Actual angle = {0:.2f}'.format(actual), (10, 30),
@@ -76,7 +76,7 @@ for i, sample in df.iterrows():
                 cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 255), 1, cv2.LINE_AA)
 
     # Write the image to the output directory so we can create a video of this later
-    cv2.imwrite(os.path.join('./output', sample['image_name']), display_img)
+    cv2.imwrite(os.path.join('./output', '{0:05d}.jpg'.format(i)), display_img)
 
     # Display the image
     cv2.imshow("Steering Demo", display_img)
