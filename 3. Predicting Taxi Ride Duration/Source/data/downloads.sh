@@ -44,11 +44,11 @@ grep '^[0-9]' ${f} | awk -F',' -v OFS=',' '{print $1,$2,$3,$8,$9,$5,$6,$7,$10,$1
 done
 
 #Consolidate green taxi data and extract relevant info
-echo "VendorID,tpep_pickup_datetime,tpep_dropoff_datetime,passenger_count,trip_distance,RatecodeID,PULocationID,DOLocationID,fare_amount,tolls_amount,total_amount" > ./taxi_data/consolidated_green_tripdata.csv
+echo "VendorID,tpep_pickup_datetime,tpep_dropoff_datetime,PULocationID,DOLocationID,passenger_count,trip_distance,total_amount" > ./taxi_data/consolidated_green_tripdata.csv
 ls ./taxi_data/*green_tripdata* | grep -v consolidated | while read f;
 do
 echo ${f}
-grep '^[0-9]' ${f} | awk -F',' -v OFS=',' '{print $1,$2,$3,$4,$5,$6,$8,$9,$11,$15,$17}' >> ./taxi_data/consolidated_green_tripdata.csv
+grep '^[0-9]' ${f} | awk -F',' -v OFS=',' '{print $1,$2,$3,$6,$7,$8,$9,$17}' >> ./taxi_data/consolidated_green_tripdata.csv
 done
 
 #Weather data
