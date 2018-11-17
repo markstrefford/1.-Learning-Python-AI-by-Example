@@ -35,7 +35,7 @@ class LossHistory(Callback):
         self.losses.append(logs.get('loss'))
 
 
-# Input = [PULocationID, DOLocationID, PUMonth, PUDate, PUDayOfWeek, DOMonth, DODate, DODayOfWeek]
+# Input = [PULocationID, DOLocationID, PUMonth, PUDate, PUDayOfWeek, DOMonth, DODate, DODayOfWeek, Temp, Precipitation, Snow]
 # Output = [DurationMin, DurationMax, Duration, PriceMin, PriceMax, Price]
 def nn(input_shape=8,
        activation='relu',

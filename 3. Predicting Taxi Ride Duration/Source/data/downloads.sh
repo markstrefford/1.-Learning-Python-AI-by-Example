@@ -36,11 +36,11 @@ wget https://s3.amazonaws.com/nyc-tlc/trip+data/green_tripdata_2018-05.csv -P ./
 wget https://s3.amazonaws.com/nyc-tlc/trip+data/green_tripdata_2018-06.csv -P ./taxi_data
 
 #Consolidate yellow taxi data and extract relevant info
-echo "VendorID,tpep_pickup_datetime,tpep_dropoff_datetime,passenger_count,trip_distance,RatecodeID,PULocationID,DOLocationID,fare_amount,tolls_amount,total_amount" > ./taxi_data/consolidated_yellow_tripdata.csv
+echo "VendorID,tpep_pickup_datetime,tpep_dropoff_datetime,PULocationID,DOLocationID,passenger_count,trip_distance,total_amount" > ./taxi_data/consolidated_yellow_tripdata.csv
 ls ./taxi_data/*yellow_tripdata* | grep -v consolidated | while read f;
 do
 echo ${f}
-grep '^[0-9]' ${f} | awk -F',' -v OFS=',' '{print $1,$2,$3,$8,$9,$5,$6,$7,$10,$14,$17}' >> ./taxi_data/consolidated_yellow_tripdata.csv
+grep '^[0-9]' ${f} | awk -F',' -v OFS=',' '{print $1,$2,$3,$8,$9,$4,$5,$17}' >> ./taxi_data/consolidated_yellow_tripdata.csv
 done
 
 #Consolidate green taxi data and extract relevant info

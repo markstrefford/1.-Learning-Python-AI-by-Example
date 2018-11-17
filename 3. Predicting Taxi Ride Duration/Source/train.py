@@ -42,7 +42,7 @@ parser.add_argument('-log-images', dest='log-images',
 args = vars(parser.parse_args())
 
 # Prepare data for training, validation and test
-# TODO - Update columns and handle batch-loading the CSV!! 
+# TODO - Update columns and handle batch-loading the CSV!!
 columns = ['image_name', 'angle', 'date', 'time']
 df = pd.read_csv(args['data-file'], names=columns, delimiter=' ').sample(frac=1).reset_index(drop=True)
 
