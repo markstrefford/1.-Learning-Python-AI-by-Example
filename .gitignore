@@ -14,7 +14,6 @@ __pycache__
 *.jpg
 *.txt
 *.gz
-*.csv
 
 # Module 1
 *db
@@ -31,7 +30,7 @@ nn4.small2.v1.t7
 my_photos/
 
 # Module 3
-taxi_zones
+taxi_data
 
 # Module 4
 logs/events.out*
