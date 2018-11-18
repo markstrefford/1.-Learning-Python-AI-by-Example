@@ -39,12 +39,13 @@ class LossHistory(Callback):
 #           'PULocationLat', 'PULocationLong',
 #           'DOLocationLat', 'DOLocationLong',
 #           'PUDate', 'PUDayOfWeek',
-#           'DODate', 'DODayOfWeek'
+#           'DODate', 'DODayOfWeek',
+#           'Precipitation'
 #         ]
 #
 # Could also add in:
 #         [
-#           'Temperature', 'Precipitation', 'WindSpeed', 'SnowDepth', 'Snow'
+#           'Temperature', 'WindSpeed', 'SnowDepth', 'Snow'
 #         ]
 # Output = [
 #           'Duration',

@@ -7,6 +7,7 @@ Train the NN
 import pandas as pd
 import argparse
 import cv2
+from sklearn.model_selection import train_test_split
 from model.model import nn, LossHistory, tensorboard, checkpoint, progressbar
 from data import generators
 
@@ -29,30 +30,31 @@ parser.add_argument('-limit-batches', dest='limit-batches',
                     type=int,
                     help='Limit batches to train on ')
 parser.add_argument('-epochs', dest='epochs',
-                    default=200,
+                    default=20,
                     type=int,
                     help='Number of epochs')
-parser.add_argument('-data-file', dest='data-file',
-                    default='./data/data.txt',
-                    help='File containing list of images and steering angles')
-parser.add_argument('-log-images', dest='log-images',
-                    default='N',
-                    choices=('Y', 'N'),
-                    help='Log training images to disk (Y)es or (N)o')
+parser.add_argument('-tripdata', dest='tripdata',
+                    default='./data/taxi_data/cleansed_yellow_tripdata_2018-06.csv',
+                    help='File containing trip data from NYC open data website')
+parser.add_argument('-weatherdata', dest='weatherdata',
+                    default='./data/weather_data/ny_jfk_weather_2018-06.csv',
+                    help='File containing weather data from NYC open data website')
 args = vars(parser.parse_args())
 
 # Prepare data for training, validation and test
-# TODO - Update columns and handle batch-loading the CSV!!
-columns = ['image_name', 'angle', 'date', 'time']
-df = pd.read_csv(args['data-file'], names=columns, delimiter=' ').sample(frac=1).reset_index(drop=True)
-
-# TODO - Determine length of dataset
-# TODO - Split into train, validation, test (perhaps indices based on length of dataset?)
+# Start by loading the data and randomising the order
+tripdata = pd.read_csv(args['tripdata'], delimiter=',').sample(frac=1).reset_index(drop=True)
 sample_idx = {}
-num_samples = len(df)
-sample_idx['train'] = [i for i in range(0, num_samples, 2)]
-sample_idx['valid'] = [i for i in range(1, num_samples, 4)]
-sample_idx['test'] = [i for i in range(3, num_samples, 4)]
+num_samples = len(tripdata)
+num_train_samples = int(num_samples * 0.6)
+num_valid_samples = int(num_samples * 0.2)
+num_test_samples = int(num_samples * 0.2)
+sample_idx['train'] = [i for i in range(0, num_train_samples, 1)]
+sample_idx['valid'] = [i for i in range(num_train_samples, num_train_samples + num_valid_samples, 1)]
+sample_idx['test'] = [i for i in range(num_samples - num_test_samples, num_samples, 1)]
+
+# Load weather data
+weatherdata = pd.read_csv(args['weatherdata'], delimiter=',')
 
 # Setup debugging
 debug = True if args['debug'] == 'Y' else False
@@ -61,12 +63,12 @@ if debug:
           .format(args['batch-size'], args['limit-batches'], args['epochs'], args['data-file']))
 
 # Set up a generator
-train_generator = generators.DataGenerator(df.loc[sample_idx['train']],
+train_generator = generators.DataGenerator(tripdata.loc[sample_idx['train']],
                                            debug=debug,
                                            batch_size=args['batch-size'],
                                            limit_batches=args['limit-batches'],
                                            label='Train')
-valid_generator = generators.DataGenerator(df.loc[sample_idx['valid']],
+valid_generator = generators.DataGenerator(tripdata.loc[sample_idx['valid']],
                                            debug=debug,
                                            batch_size=args['batch-size'],
                                            limit_batches=args['limit-batches'],
