@@ -6,8 +6,7 @@ Train the NN
 
 import pandas as pd
 import argparse
-import cv2
-from sklearn.model_selection import train_test_split
+import geopandas
 from model.model import nn, LossHistory, tensorboard, checkpoint, progressbar
 from data import generators
 
@@ -39,9 +38,9 @@ parser.add_argument('-trip-data', dest='trip-data',
 parser.add_argument('-weather-data', dest='weather-data',
                     default='./data/weather_data/ny_jfk_weather_2018-06.csv',
                     help='File containing weather data from NYC open data website')
-parser.add_argument('-taxizone-data', dest='taxizone-data',
-                    default='./data/weather_data/ny_jfk_weather_2018-06.csv',
-                    help='File containing weather data from NYC open data website')
+parser.add_argument('-taxizone-file', dest='taxizone-file',
+                    default='./data/taxi_zones',
+                    help='Directory containing shape files from NYC website')
 args = vars(parser.parse_args())
 
 # Prepare data for training, validation and test
@@ -59,23 +58,24 @@ sample_idx['test'] = [i for i in range(num_samples - num_test_samples, num_sampl
 # Load weather data
 weather_data = pd.read_csv(args['weather-data'], delimiter=',')
 
-# Load taxi-zone geo data
-taxizone_data = pd.read_csv(args['taxizone-data'], delimiter=',').set_index('OBJECTID')
+taxizone_data = geopandas.read_file(args['taxizone-file']).set_index('OBJECTID')
+zone_ids = taxizone_data.index.tolist()
+taxizone_data['centroids'] = taxizone_data.geometry.centroid
 
 # Setup debugging
 debug = True if args['debug'] == 'Y' else False
 if debug:
-    print('train.py: batch-size={}, limit-batches={}, epochs={}, data-file={}'
-          .format(args['batch-size'], args['limit-batches'], args['epochs'], args['data-file']))
+    print('train.py: batch-size={}, limit-batches={}, epochs={}, trip-data={}'
+          .format(args['batch-size'], args['limit-batches'], args['epochs'], args['trip-data']))
 
 # Set up a generator
 train_generator = generators.DataGenerator(trip_data.loc[sample_idx['train']],
-                                           weather_data, taxizone_data,
+                                           weather_data, taxizone_data, zone_ids,
                                            debug=debug,
                                            batch_size=args['batch-size'],
                                            limit_batches=args['limit-batches'])
 valid_generator = generators.DataGenerator(trip_data.loc[sample_idx['valid']],
-                                           weather_data, taxizone_data,
+                                           weather_data, taxizone_data, zone_ids,
                                            debug=debug,
                                            batch_size=args['batch-size'],
                                            limit_batches=args['limit-batches'])

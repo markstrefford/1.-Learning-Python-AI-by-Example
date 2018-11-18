@@ -51,16 +51,13 @@ class LossHistory(Callback):
 #           'Duration',
 #           'Price'
 #          ]
-def nn(input_shape=9,
-       activation='relu',
-       loss='mean_squared_error',
-       optimizer=adam,
-       dropout=0.25,
-       debug=False):
+def nn(input_shape=9, output_shape=2,
+       activation='relu', loss='mean_squared_error',
+       optimizer=adam, dropout=0.25, debug=False):
 
     print('nn(): Creating NN with parameters:\n')
-    print('image_shape={}\ndropout={}\nactivation={}\noptimizer={}\nloss={}'
-          .format(input_shape, dropout, activation, optimizer, loss))
+    print('image_shape={}\noutput_shape={}\ndropout={}\nactivation={}\noptimizer={}\nloss={}'
+          .format(input_shape, output_shape, dropout, activation, optimizer, loss))
 
     model = Sequential()
 

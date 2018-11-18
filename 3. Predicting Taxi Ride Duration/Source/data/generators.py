@@ -12,18 +12,11 @@ import geopandas
 from shapely.geometry import Point, LineString
 
 
-def get_taxi_zones(taxi_zones_file):
-    taxi_zones = geopandas.read_file(taxi_zones_file).set_index('OBJECTID')
-    zone_ids = taxi_zones.index.tolist()
-    taxi_zones['centroids'] = taxi_zones.geometry.centroid
-    return taxi_zones, zone_ids
-
-
 class DataGenerator(Sequence):
     """
     Data Generator to load training, validation and test batches
     """
-    def __init__(self, trip_data, weather_data, taxizone_data,
+    def __init__(self, trip_data, weather_data, taxizone_data, zone_ids,
                  num_features = 9, batch_size=128, limit_batches=0,
                  label=None, debug=False):
         """
@@ -33,6 +26,7 @@ class DataGenerator(Sequence):
         :param batch_size:
         """
         self.num_features = 9
+        self.num_outputs = 2
         self.batch_size = batch_size
         self.label = label
         self.idx = 0
@@ -43,6 +37,7 @@ class DataGenerator(Sequence):
         self.trip_data = trip_data   # tripdata.reset_index().loc[:self.limit_batches * self.batch_size]
         self.weather_data = weather_data
         self.taxizone_data = taxizone_data
+        self.zone_ids = zone_ids
         if debug:
             print('DataGenerator(): num_batches = {}, batch_size = {}, len(tripdata) = {}'
                   .format(self.limit_batches, self.batch_size, len(self.trip_data)))
@@ -79,24 +74,28 @@ class DataGenerator(Sequence):
         :param index: list
         """
         X = np.zeros((self.batch_size, self.num_features), dtype=float)
-        y = np.zeros((self.batch_size), dtype=float)
+        y = np.zeros((self.batch_size, self.num_outputs), dtype=float)
 
         for i, sample in batch_data.iterrows():
             # Get lat/long of pickup and dropoff locations
-            PULocation = self.taxizone_data[self.taxizone_data['LocationID'] == sample['PULocationID']].centroids.values(0)
+            PULocation = self.taxizone_data.loc[sample['PULocationID']].centroids
             PULocationLong, PULocationLat = PULocation.x, PULocation.y
-            DOLocation = self.taxizone_data[self.taxizone_data['LocationID'] == sample['DOLocationID']].centroids.values(0)
+            DOLocation = self.taxizone_data.loc[sample['DOLocationID']].centroids
             DOLocationLong, DOLocationLat = DOLocation.x, DOLocation.y
-
-            # Get month date, day of week and hours/mins for pickup and drop off
+            # Get month date, day of week and hours/mins for pickup
             PUDateTime = datetime.strptime(sample.tpep_pickup_datetime, '%Y-%m-%d %H:%M:%S')
             PUDate = PUDateTime.strftime('%Y-%m-%d')
-            PUMonthDate = PUDate.split('-')[2]
+            PUYear, PUMonth, PUMonthDate = PUDate.split('-')
+            # TODO - Add this to pre-processing of trip data! Some random months in the data!!
+            if PUYear != '2018' or PUMonth != '06':
+                # print('ERROR: Invalid date {}-{}-{}'.format(PUYear, PUMonth, PUMonthDate))
+                continue
             PUDayOfWeek = PUDateTime.weekday()
             PUTimeHour, PUTimeMinute = datetime.strptime(
                 sample.tpep_pickup_datetime, '%Y-%m-%d %H:%M:%S'
             ).strftime('%H:%M').split(':')
 
+            # Get precipitation for that day
             Precipitation = self.weather_data[self.weather_data['DATE'] == PUDate]['PRCP'].values[0]
 
             X[i] = [
@@ -113,15 +112,15 @@ class DataGenerator(Sequence):
 
             y[i] = [
                 sample['trip_distance'],
-                sample['total_amount'] - sample['tip-amount']
+                sample['total_amount'] - sample['tip_amount']
             ]
 
             # Extract relevant columns
             # Add in geo location for PU and DO Location IDs
             # Populate X
             # Populate y with price and duration
-            if self.debug:
-                print(X[i], y[i])
+            # if self.debug:
+            #     print(X[i], y[i])
         return X, y
 
 
