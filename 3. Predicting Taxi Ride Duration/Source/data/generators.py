@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 import os
 from keras.utils import Sequence
+from datetime import datetime
 import geopandas
 from shapely.geometry import Point, LineString
 
@@ -82,8 +83,22 @@ class DataGenerator(Sequence):
         y = np.zeros((self.batch_size), dtype=float)
 
         for i, sample in batch_data.iterrows():
+            # Get lat/long of pickup and dropoff locations
             PULocation = self.taxizone_data[self.taxizone_data['PULocationID'] == sample['PULocationID']].centroids
+            PULocationLong, PULocationLat = PULocation.x, PULocation.y
             DOLocation = self.taxizone_data[self.taxizone_data['PULocationID'] == sample['PULocationID']].centroids
+            DOLocationLong, DOLocationLat = DOLocation.x, DOLocation.y
+            # Get month date, day of week and hours/mins for pickup and drop off
+            PUDate = str(datetime.strptime(sample.tpep_pickup_datetime, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d'))
+            PUMonthDate = PUDate.split('-')[2]
+            PUDayOfMonth = PUDate.weekday()
+            PUTimeHour, PUTimeMin = str(datetime.strptime(sample.tpep_pickup_datetime,
+                                                          '%Y-%m-%d %H:%M:%S').strftime('%H:%M')).split(':')
+            DODate = str(datetime.strptime(sample.tpep_dropoff_datetime, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d'))
+            DOMonthDate = DODate.split('-')[2]
+            DODayOfMonth = DODate.weekday()
+            DOTimeHour, DOTimeMin = str(datetime.strptime(sample.tpep_dropoff_datetime,
+                                                          '%Y-%m-%d %H:%M:%S').strftime('%H:%M')).split(':')
 
             # Extract relevant columns
             # Add in geo location for PU and DO Location IDs
