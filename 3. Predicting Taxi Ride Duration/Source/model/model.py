@@ -36,18 +36,21 @@ class LossHistory(Callback):
 
 
 # Input = [
-#           'PULocationID', 'PULocationLat', 'PULocationLong',
-#           'DOLocationID', 'DOLocationLat', 'DOLocationLong',
-#           'PUMonth', 'PUDate', 'PUDayOfWeek',
-#           'DOMonth', 'DODate', 'DODayOfWeek',
+#           'PULocationLat', 'PULocationLong',
+#           'DOLocationLat', 'DOLocationLong',
+#           'PUDate', 'PUDayOfWeek',
+#           'DODate', 'DODayOfWeek'
+#         ]
+#
+# Could also add in:
+#         [
 #           'Temperature', 'Precipitation', 'WindSpeed', 'SnowDepth', 'Snow'
 #         ]
 # Output = [
-#           'DurationMin', 'DurationMax', 'Duration',
-#           'DistanceMin', 'DistanceMax', 'Distance',
-#           'PriceMin', 'PriceMax', 'Price'
+#           'Duration',
+#           'Price'
 #          ]
-def nn(input_shape=17,
+def nn(input_shape=8,
        activation='relu',
        loss='mean_squared_error',
        optimizer=adam,
@@ -66,9 +69,9 @@ def nn(input_shape=17,
     model.add(Dropout(dropout))
 
     # 2nd Fully Connected Layer
-    model.add(Dense(512))
-    model.add(Activation(activation))
-    model.add(Dropout(dropout))
+    # model.add(Dense(512))
+    # model.add(Activation(activation))
+    # model.add(Dropout(dropout))
 
     # 3rd Fully Connected Layer
     model.add(Dense(128))
@@ -76,7 +79,7 @@ def nn(input_shape=17,
     model.add(Dropout(dropout))
 
     # Output
-    model.add(Dense(9))
+    model.add(Dense(2))
     model.add(Activation('linear'))
 
     model.compile(loss=loss, optimizer=optimizer)
