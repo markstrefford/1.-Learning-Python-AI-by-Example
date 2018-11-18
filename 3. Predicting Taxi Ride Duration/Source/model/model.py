@@ -51,7 +51,7 @@ class LossHistory(Callback):
 #           'Duration',
 #           'Price'
 #          ]
-def nn(input_shape=8,
+def nn(input_shape=9,
        activation='relu',
        loss='mean_squared_error',
        optimizer=adam,

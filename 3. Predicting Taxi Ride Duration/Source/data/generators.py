@@ -68,9 +68,8 @@ class DataGenerator(Sequence):
         Generates data containing batch_size samples
         Input = [
           'PULocationLat', 'PULocationLong',
+          'PUDate', 'PUDayOfWeek', 'PUTimeHour', 'PUTimeMin',
           'DOLocationLat', 'DOLocationLong',
-          'PUDate', 'PUDayOfWeek',
-          'DODate', 'DODayOfWeek',
           'Precipitation'
         ]
         Output = [
@@ -79,37 +78,50 @@ class DataGenerator(Sequence):
         ]
         :param index: list
         """
-        X = np.zeros((self.batch_size, self.num_features))
+        X = np.zeros((self.batch_size, self.num_features), dtype=float)
         y = np.zeros((self.batch_size), dtype=float)
 
         for i, sample in batch_data.iterrows():
             # Get lat/long of pickup and dropoff locations
-            PULocation = self.taxizone_data[self.taxizone_data['PULocationID'] == sample['PULocationID']].centroids
+            PULocation = self.taxizone_data[self.taxizone_data['LocationID'] == sample['PULocationID']].centroids.values(0)
             PULocationLong, PULocationLat = PULocation.x, PULocation.y
-            DOLocation = self.taxizone_data[self.taxizone_data['PULocationID'] == sample['PULocationID']].centroids
+            DOLocation = self.taxizone_data[self.taxizone_data['LocationID'] == sample['DOLocationID']].centroids.values(0)
             DOLocationLong, DOLocationLat = DOLocation.x, DOLocation.y
+
             # Get month date, day of week and hours/mins for pickup and drop off
-            PUDate = str(datetime.strptime(sample.tpep_pickup_datetime, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d'))
+            PUDateTime = datetime.strptime(sample.tpep_pickup_datetime, '%Y-%m-%d %H:%M:%S')
+            PUDate = PUDateTime.strftime('%Y-%m-%d')
             PUMonthDate = PUDate.split('-')[2]
-            PUDayOfMonth = PUDate.weekday()
-            PUTimeHour, PUTimeMin = str(datetime.strptime(sample.tpep_pickup_datetime,
-                                                          '%Y-%m-%d %H:%M:%S').strftime('%H:%M')).split(':')
-            DODate = str(datetime.strptime(sample.tpep_dropoff_datetime, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d'))
-            DOMonthDate = DODate.split('-')[2]
-            DODayOfMonth = DODate.weekday()
-            DOTimeHour, DOTimeMin = str(datetime.strptime(sample.tpep_dropoff_datetime,
-                                                          '%Y-%m-%d %H:%M:%S').strftime('%H:%M')).split(':')
+            PUDayOfWeek = PUDateTime.weekday()
+            PUTimeHour, PUTimeMinute = datetime.strptime(
+                sample.tpep_pickup_datetime, '%Y-%m-%d %H:%M:%S'
+            ).strftime('%H:%M').split(':')
+
+            Precipitation = self.weather_data[self.weather_data['DATE'] == PUDate]['PRCP'].values[0]
+
+            X[i] = [
+                PULocationLat,
+                PULocationLong,
+                PUDayOfWeek,
+                PUMonthDate,
+                PUTimeHour,
+                PUTimeMinute,
+                DOLocationLat,
+                DOLocationLong,
+                Precipitation
+            ]
+
+            y[i] = [
+                sample['trip_distance'],
+                sample['total_amount'] - sample['tip-amount']
+            ]
 
             # Extract relevant columns
             # Add in geo location for PU and DO Location IDs
             # Populate X
             # Populate y with price and duration
             if self.debug:
-                # text = 'Frame: {} Angle: {}'.format(i, sample['angle'])
-                # cv2.putText(resized, text, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1, cv2.LINE_AA)
-                # file = './logs/images/{}-{}-{}'.format(self.label, i, sample['image_name'])
-                # print('Writing debug image to {}'.format(file))
-                # cv2.imwrite(file, resized)
+                print(X[i], y[i])
         return X, y
 
 
