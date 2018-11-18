@@ -33,19 +33,22 @@ parser.add_argument('-epochs', dest='epochs',
                     default=20,
                     type=int,
                     help='Number of epochs')
-parser.add_argument('-tripdata', dest='tripdata',
+parser.add_argument('-trip-data', dest='trip-data',
                     default='./data/taxi_data/cleansed_yellow_tripdata_2018-06.csv',
                     help='File containing trip data from NYC open data website')
-parser.add_argument('-weatherdata', dest='weatherdata',
+parser.add_argument('-weather-data', dest='weather-data',
+                    default='./data/weather_data/ny_jfk_weather_2018-06.csv',
+                    help='File containing weather data from NYC open data website')
+parser.add_argument('-taxizone-data', dest='taxizone-data',
                     default='./data/weather_data/ny_jfk_weather_2018-06.csv',
                     help='File containing weather data from NYC open data website')
 args = vars(parser.parse_args())
 
 # Prepare data for training, validation and test
 # Start by loading the data and randomising the order
-tripdata = pd.read_csv(args['tripdata'], delimiter=',').sample(frac=1).reset_index(drop=True)
+trip_data = pd.read_csv(args['trip-data'], delimiter=',').sample(frac=1).reset_index(drop=True)
 sample_idx = {}
-num_samples = len(tripdata)
+num_samples = len(trip_data)
 num_train_samples = int(num_samples * 0.6)
 num_valid_samples = int(num_samples * 0.2)
 num_test_samples = int(num_samples * 0.2)
@@ -54,7 +57,10 @@ sample_idx['valid'] = [i for i in range(num_train_samples, num_train_samples + n
 sample_idx['test'] = [i for i in range(num_samples - num_test_samples, num_samples, 1)]
 
 # Load weather data
-weatherdata = pd.read_csv(args['weatherdata'], delimiter=',')
+weather_data = pd.read_csv(args['weather-data'], delimiter=',')
+
+# Load taxi-zone geo data
+taxizone_data = pd.read_csv(args['taxizone-data'], delimiter=',').set_index('OBJECTID')
 
 # Setup debugging
 debug = True if args['debug'] == 'Y' else False
@@ -63,16 +69,16 @@ if debug:
           .format(args['batch-size'], args['limit-batches'], args['epochs'], args['data-file']))
 
 # Set up a generator
-train_generator = generators.DataGenerator(tripdata.loc[sample_idx['train']],
+train_generator = generators.DataGenerator(trip_data.loc[sample_idx['train']],
+                                           weather_data, taxizone_data,
                                            debug=debug,
                                            batch_size=args['batch-size'],
-                                           limit_batches=args['limit-batches'],
-                                           label='Train')
-valid_generator = generators.DataGenerator(tripdata.loc[sample_idx['valid']],
+                                           limit_batches=args['limit-batches'])
+valid_generator = generators.DataGenerator(trip_data.loc[sample_idx['valid']],
+                                           weather_data, taxizone_data,
                                            debug=debug,
                                            batch_size=args['batch-size'],
-                                           limit_batches=args['limit-batches'],
-                                           label='Validate')
+                                           limit_batches=args['limit-batches'])
 
 # Setup the CNN
 history = LossHistory()
