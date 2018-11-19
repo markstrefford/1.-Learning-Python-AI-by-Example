@@ -23,7 +23,7 @@ checkpoint = ModelCheckpoint(filepath='./logs/weights-{}.hdf5'.format(datetime.n
 progressbar = ProgbarLogger(count_mode='steps', stateful_metrics=None)
 
 # Optimizer and learning rate
-lr = 0.0003
+lr = 0.001
 adam = Adam(lr=lr)
 
 
@@ -53,7 +53,7 @@ class LossHistory(Callback):
 #           'Price'
 #          ]
 def nn(input_shape=10, output_shape=2,
-       activation='relu', loss='mean_squared_error',
+       activation='elu', loss='mean_squared_error',
        optimizer=adam, dropout=0.25, debug=False):
 
     print('nn(): Creating NN with parameters:\n')

@@ -17,7 +17,7 @@ class DataGenerator(Sequence):
     Data Generator to load training, validation and test batches
     """
     def __init__(self, trip_data, weather_data, taxizone_data, zone_ids,
-                 num_features = 9, batch_size=128, limit_batches=0,
+                 num_features = 10, batch_size=128, limit_batches=0,
                  label=None, debug=False):
         """
         :param df:
@@ -25,7 +25,7 @@ class DataGenerator(Sequence):
         :param data_file:
         :param batch_size:
         """
-        self.num_features = 9
+        self.num_features = num_features
         self.num_outputs = 2
         self.batch_size = batch_size
         self.label = label
@@ -82,7 +82,7 @@ class DataGenerator(Sequence):
             PULocationLong, PULocationLat = PULocation.x, PULocation.y
             DOLocation = self.taxizone_data.loc[sample['DOLocationID']].centroids
             DOLocationLong, DOLocationLat = DOLocation.x, DOLocation.y
-            TripDistance = self.sample.trip_distance
+            TripDistance = sample.trip_distance
             # Get month date, day of week and hours/mins for pickup
             PUDateTime = datetime.strptime(sample.tpep_pickup_datetime, '%Y-%m-%d %H:%M:%S')
             PUDate = PUDateTime.strftime('%Y-%m-%d')
