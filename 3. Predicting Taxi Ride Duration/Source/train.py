@@ -58,9 +58,11 @@ sample_idx['test'] = [i for i in range(num_samples - num_test_samples, num_sampl
 # Load weather data
 weather_data = pd.read_csv(args['weather-data'], delimiter=',')
 
+# Load taxizone geo data and convert to degrees based lat/long coordinates
 taxizone_data = geopandas.read_file(args['taxizone-file']).set_index('OBJECTID')
 zone_ids = taxizone_data.index.tolist()
 taxizone_data['centroids'] = taxizone_data.geometry.centroid
+taxizone_data = taxizone_data.to_crs({'init': 'epsg:4326'})
 
 # Setup debugging
 debug = True if args['debug'] == 'Y' else False

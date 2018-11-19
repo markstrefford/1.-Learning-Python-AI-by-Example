@@ -39,7 +39,7 @@ class LossHistory(Callback):
 #           'PULocationLat', 'PULocationLong',
 #           'DOLocationLat', 'DOLocationLong',
 #           'PUDate', 'PUDayOfWeek',
-#           'DODate', 'DODayOfWeek',
+#           'PUHour', 'PUMinute',
 #           'Precipitation'
 #         ]
 #
@@ -62,7 +62,7 @@ def nn(input_shape=9, output_shape=2,
     model = Sequential()
 
     # 1st Fully Connected Layer
-    model.add(Dense(512, input_dim=input_shape))
+    model.add(Dense(1024, input_dim=input_shape))
     model.add(Activation(activation))
     model.add(Dropout(dropout))
 
