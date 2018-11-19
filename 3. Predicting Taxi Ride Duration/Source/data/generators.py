@@ -104,7 +104,7 @@ class DataGenerator(Sequence):
                 PULocationLong,
                 DOLocationLat,
                 DOLocationLong,
-                TripDistance,
+                # TripDistance,
                 PUDayOfWeek,
                 PUMonthDate,
                 PUTimeHour,
@@ -113,7 +113,7 @@ class DataGenerator(Sequence):
             ]
 
             y[i] = [
-                sample['trip_distance'],
+                sample['duration'],
                 sample['total_amount'] - sample['tip_amount']
             ]
 
