@@ -82,6 +82,7 @@ class DataGenerator(Sequence):
             PULocationLong, PULocationLat = PULocation.x, PULocation.y
             DOLocation = self.taxizone_data.loc[sample['DOLocationID']].centroids
             DOLocationLong, DOLocationLat = DOLocation.x, DOLocation.y
+            TripDistance = self.sample.trip_distance
             # Get month date, day of week and hours/mins for pickup
             PUDateTime = datetime.strptime(sample.tpep_pickup_datetime, '%Y-%m-%d %H:%M:%S')
             PUDate = PUDateTime.strftime('%Y-%m-%d')
@@ -101,12 +102,13 @@ class DataGenerator(Sequence):
             X[i] = [
                 PULocationLat,
                 PULocationLong,
+                DOLocationLat,
+                DOLocationLong,
+                TripDistance,
                 PUDayOfWeek,
                 PUMonthDate,
                 PUTimeHour,
                 PUTimeMinute,
-                DOLocationLat,
-                DOLocationLong,
                 Precipitation
             ]
 

@@ -38,6 +38,7 @@ class LossHistory(Callback):
 # Input = [
 #           'PULocationLat', 'PULocationLong',
 #           'DOLocationLat', 'DOLocationLong',
+#           'TripDistance',
 #           'PUDate', 'PUDayOfWeek',
 #           'PUHour', 'PUMinute',
 #           'Precipitation'
@@ -51,7 +52,7 @@ class LossHistory(Callback):
 #           'Duration',
 #           'Price'
 #          ]
-def nn(input_shape=9, output_shape=2,
+def nn(input_shape=10, output_shape=2,
        activation='relu', loss='mean_squared_error',
        optimizer=adam, dropout=0.25, debug=False):
 
