@@ -3,13 +3,9 @@ Data generators for loading training, validation and test data sets
 
 """
 
-import pandas as pd
 import numpy as np
-import os
-from keras.utils import Sequence
+from keras.utils import Sequence, to_categorical
 from datetime import datetime
-import geopandas
-from shapely.geometry import Point, LineString
 
 
 class DataGenerator(Sequence):
@@ -17,7 +13,8 @@ class DataGenerator(Sequence):
     Data Generator to load training, validation and test batches
     """
     def __init__(self, trip_data, weather_data, taxizone_data, zone_ids,
-                 num_features = 10, batch_size=128, limit_batches=0,
+                 generator_type='duration',
+                 num_features=15, batch_size=128, limit_batches=0,
                  label=None, debug=False):
         """
         :param df:
@@ -26,7 +23,7 @@ class DataGenerator(Sequence):
         :param batch_size:
         """
         self.num_features = num_features
-        self.num_outputs = 2
+        self.num_outputs = 1
         self.batch_size = batch_size
         self.label = label
         self.idx = 0
@@ -37,6 +34,7 @@ class DataGenerator(Sequence):
         self.trip_data = trip_data   # tripdata.reset_index().loc[:self.limit_batches * self.batch_size]
         self.weather_data = weather_data
         self.taxizone_data = taxizone_data
+        self.generator_type=generator_type
         self.zone_ids = zone_ids
         if debug:
             print('DataGenerator(): num_batches = {}, batch_size = {}, len(tripdata) = {}'
@@ -62,15 +60,22 @@ class DataGenerator(Sequence):
         """
         Generates data containing batch_size samples
         Input = [
-          'PULocationLat', 'PULocationLong',
-          'PUDate', 'PUDayOfWeek', 'PUTimeHour', 'PUTimeMin',
-          'DOLocationLat', 'DOLocationLong',
-          'Precipitation'
-        ]
+                  1, 2: 'PULocationLat', 'PULocationLong',
+                  3, 4: 'DOLocationLat', 'DOLocationLong',
+                  Not using distance...  'TripDistance',
+                  5: 'PUDate',
+                  6 - 12: 'PUDayOfWeek' (one-hot encoding),
+                  13, 14: 'PUHour', 'PUMinute',
+                  15: 'Precipitation'
+                ]
+
+        Could also add in:
+                [
+                  'Temperature', 'WindSpeed', 'SnowDepth', 'Snow'
+                ]
         Output = [
-          'Duration',
-          'Price'
-        ]
+                  'Duration' | 'Price excl tip'
+                 ]
         :param index: list
         """
         X = np.zeros((self.batch_size, self.num_features), dtype=float)
@@ -99,23 +104,22 @@ class DataGenerator(Sequence):
             # Get precipitation for that day
             Precipitation = self.weather_data[self.weather_data['DATE'] == PUDate]['PRCP'].values[0]
 
-            X[i] = [
+            X[i] = np.concatenate((np.array([
                 PULocationLat,
                 PULocationLong,
                 DOLocationLat,
                 DOLocationLong,
                 # TripDistance,
-                PUDayOfWeek,
                 PUMonthDate,
                 PUTimeHour,
                 PUTimeMinute,
                 Precipitation
-            ]
+            ]),
+                to_categorical(PUDayOfWeek, 7)
+            ))
 
-            y[i] = [
-                sample['duration'],
-                sample['total_amount'] - sample['tip_amount']
-            ]
+            y[i] = [sample['duration']] if self.generator_type == 'duration' \
+                else [sample['total_amount'] - sample['tip_amount']]
 
             # Extract relevant columns
             # Add in geo location for PU and DO Location IDs

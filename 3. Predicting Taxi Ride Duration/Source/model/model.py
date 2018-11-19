@@ -36,12 +36,13 @@ class LossHistory(Callback):
 
 
 # Input = [
-#           'PULocationLat', 'PULocationLong',
-#           'DOLocationLat', 'DOLocationLong',
+#           1, 2: 'PULocationLat', 'PULocationLong',
+#           3, 4: 'DOLocationLat', 'DOLocationLong',
 #           Not using distance...  'TripDistance',
-#           'PUDate', 'PUDayOfWeek',
-#           'PUHour', 'PUMinute',
-#           'Precipitation'
+#           5: 'PUDate',
+#           6 - 12: 'PUDayOfWeek' (one-hot encoding),
+#           13, 14: 'PUHour', 'PUMinute',
+#           15: 'Precipitation'
 #         ]
 #
 # Could also add in:
@@ -49,12 +50,11 @@ class LossHistory(Callback):
 #           'Temperature', 'WindSpeed', 'SnowDepth', 'Snow'
 #         ]
 # Output = [
-#           'Duration',
-#           'Price excl tip'
+#           'Duration' | 'Price excl tip'
 #          ]
-def nn(input_shape=9, output_shape=2,
+def nn(input_shape=15, output_shape=1,
        activation='elu', loss='mean_squared_error',
-       optimizer=adam, dropout=0.25, debug=False):
+       optimizer=adam, dropout=0.25, debug=False, label=None):
 
     print('nn(): Creating NN with parameters:\n')
     print('image_shape={}\noutput_shape={}\ndropout={}\nactivation={}\noptimizer={}\nloss={}'
@@ -78,13 +78,14 @@ def nn(input_shape=9, output_shape=2,
     model.add(Dropout(dropout))
 
     # Output
-    model.add(Dense(2))
+    model.add(Dense(1))
     model.add(Activation('linear'))
 
     model.compile(loss=loss, optimizer=optimizer)
 
     if debug:
         print(model.summary())
-        plot_model(model, to_file='./logs/model.png')
+        model_filename = './logs/model_{}.png'.format(label) if label else './logs/model.png'
+        plot_model(model, to_file=model_filename)
 
     return model

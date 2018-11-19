@@ -9,7 +9,7 @@ import argparse
 import geopandas
 from model.model import nn, LossHistory, tensorboard, checkpoint, progressbar
 from data import generators
-
+from sklearn.utils import shuffle
 
 # Process command line arguments if supplied
 parser = argparse.ArgumentParser(
@@ -45,7 +45,9 @@ args = vars(parser.parse_args())
 
 # Prepare data for training, validation and test
 # Start by loading the data and randomising the order
-trip_data = pd.read_csv(args['trip-data'], delimiter=',').sample(frac=1).reset_index(drop=True)
+trip_data = pd.read_csv(args['trip-data'], delimiter=',')  #.sample(frac=1).reset_index(drop=True)
+trip_data = shuffle(trip_data, random_state=42)
+
 sample_idx = {}
 num_samples = len(trip_data)
 num_train_samples = int(num_samples * 0.6)
