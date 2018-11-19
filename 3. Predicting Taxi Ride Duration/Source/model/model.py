@@ -67,9 +67,9 @@ def nn(input_shape=9, output_shape=2,
     model.add(Dropout(dropout))
 
     # 2nd Fully Connected Layer
-    # model.add(Dense(512))
-    # model.add(Activation(activation))
-    # model.add(Dropout(dropout))
+    model.add(Dense(512))
+    model.add(Activation(activation))
+    model.add(Dropout(dropout))
 
     # 3rd Fully Connected Layer
     model.add(Dense(128))
