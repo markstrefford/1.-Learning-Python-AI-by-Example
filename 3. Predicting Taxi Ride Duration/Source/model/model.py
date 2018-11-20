@@ -4,9 +4,10 @@ Create the CNN model in Keras
 """
 
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Flatten
+from keras.layers import Dense, Dropout, Activation, BatchNormalization
 from keras.utils import plot_model
 from keras.callbacks import TensorBoard, Callback, ModelCheckpoint, ProgbarLogger
+from keras.regularizers import l1
 from keras.optimizers import Adam
 from datetime import datetime
 
@@ -52,8 +53,8 @@ class LossHistory(Callback):
 # Output = [
 #           'Duration' | 'Price excl tip'
 #          ]
-def nn(input_shape=65, output_shape=1,
-       activation='elu', loss='mean_squared_error',
+def nn(input_shape=66, output_shape=1,
+       activation='relu', loss='mean_squared_error',
        optimizer=adam, dropout=0.25, debug=False, label=None):
 
     print('nn(): Creating NN with parameters:\n')
@@ -63,19 +64,37 @@ def nn(input_shape=65, output_shape=1,
     model = Sequential()
 
     # 1st Fully Connected Layer
-    model.add(Dense(8192, input_dim=input_shape))
+    model.add(Dense(512, input_dim=input_shape, activity_regularizer=l1(0.01)))
     model.add(Activation(activation))
+    model.add(BatchNormalization())
     # model.add(Dropout(dropout))
 
     # 2nd Fully Connected Layer
-    # model.add(Dense(512))
-    # model.add(Activation(activation))
+    model.add(Dense(256))
+    model.add(Activation(activation))
+    model.add(BatchNormalization())
     # model.add(Dropout(dropout))
 
     # 3rd Fully Connected Layer
-    # model.add(Dense(512))
-    # model.add(Activation(activation))
+    model.add(Dense(128))
+    model.add(Activation(activation))
+    model.add(BatchNormalization())
     # model.add(Dropout(dropout))
+
+    # 4rd Fully Connected Layer
+    model.add(Dense(64))
+    model.add(Activation(activation))
+    model.add(BatchNormalization())
+
+    # 5rd Fully Connected Layer
+    model.add(Dense(32))
+    model.add(Activation(activation))
+    model.add(BatchNormalization())
+
+    # 6rd Fully Connected Layer
+    model.add(Dense(8))
+    model.add(Activation(activation))
+    model.add(BatchNormalization())
 
     # Output
     model.add(Dense(1))

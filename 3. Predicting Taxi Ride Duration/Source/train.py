@@ -11,6 +11,8 @@ from model.model import nn, LossHistory, tensorboard, checkpoint, progressbar
 from data import generators
 from sklearn.utils import shuffle
 
+default_batch_size = 128
+
 # Process command line arguments if supplied
 parser = argparse.ArgumentParser(
         description='Train our cnn to predict steering angles')
@@ -25,7 +27,7 @@ parser.add_argument('-shuffle', dest='shuffle',
                     choices=('Y', 'N'),
                     help='Debug (Y)es or (N)o')
 parser.add_argument('-batch-size', dest='batch-size',
-                    default=128,
+                    default=default_batch_size,
                     type=int,
                     help='Batch size (suggest 32 - 128)')
 parser.add_argument('-limit-batches', dest='limit-batches',
@@ -51,6 +53,10 @@ args = vars(parser.parse_args())
 # Prepare data for training, validation and test
 # Start by loading the data and randomising the order
 trip_data = pd.read_csv(args['trip-data'], delimiter=',')  #.sample(frac=1).reset_index(drop=True)
+if args['limit-batches']:
+    orig_length = len(trip_data)
+    trip_data = trip_data[:args['limit-batches'] * args['batch-size']]
+    print('Training data resized from {} to {} ({} * {})'.format(orig_length, len(trip_data), args['limit-batches'], args['batch-size']))
 if shuffle:
     trip_data = shuffle(trip_data, random_state=42)
 
@@ -67,10 +73,9 @@ sample_idx['test'] = [i for i in range(num_samples - num_test_samples, num_sampl
 weather_data = pd.read_csv(args['weather-data'], delimiter=',')
 
 # Load taxizone geo data and convert to degrees based lat/long coordinates
-taxizone_data = geopandas.read_file(args['taxizone-file']).set_index('OBJECTID')
+taxizone_data = geopandas.read_file(args['taxizone-file']).set_index('OBJECTID').to_crs({'init': 'epsg:4326'})
 zone_ids = taxizone_data.index.tolist()
-taxizone_data['centroids'] = taxizone_data.geometry.centroid
-taxizone_data = taxizone_data.to_crs({'init': 'epsg:4326'})
+taxizone_data['centroids'] = taxizone_data.geometry.centroid.to_crs({'init': 'epsg:4326'})
 
 # Setup debugging
 debug = True if args['debug'] == 'Y' else False
@@ -82,13 +87,13 @@ if debug:
 train_generator = generators.DataGenerator(trip_data.loc[sample_idx['train']],
                                            weather_data, taxizone_data, zone_ids,
                                            debug=debug,
-                                           batch_size=args['batch-size'],
-                                           limit_batches=args['limit-batches'])
+                                           batch_size=args['batch-size'])
+#                                          limit_batches=args['limit-batches'])
 valid_generator = generators.DataGenerator(trip_data.loc[sample_idx['valid']],
                                            weather_data, taxizone_data, zone_ids,
                                            debug=debug,
-                                           batch_size=args['batch-size'],
-                                           limit_batches=args['limit-batches'])
+                                           batch_size=args['batch-size'])
+#                                           limit_batches=args['limit-batches'])
 
 # Setup the CNN
 history = LossHistory()

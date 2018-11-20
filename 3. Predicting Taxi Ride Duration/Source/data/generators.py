@@ -14,7 +14,7 @@ class DataGenerator(Sequence):
     """
     def __init__(self, trip_data, weather_data, taxizone_data, zone_ids,
                  generator_type='duration',
-                 num_features=65, batch_size=128, limit_batches=0,
+                 num_features=66, batch_size=128, limit_batches=0,
                  label=None, debug=False):
         """
         :param df:
@@ -111,7 +111,7 @@ class DataGenerator(Sequence):
                 # PULocationLong,
                 # DOLocationLat,
                 # DOLocationLong,
-                # TripDistance,
+                TripDistance,
                 # PUTimeMinute,
                 Precipitation
             ]),
