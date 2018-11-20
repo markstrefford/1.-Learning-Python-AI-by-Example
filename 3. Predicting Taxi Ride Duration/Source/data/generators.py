@@ -14,7 +14,7 @@ class DataGenerator(Sequence):
     """
     def __init__(self, trip_data, weather_data, taxizone_data, zone_ids,
                  generator_type='duration',
-                 num_features=15, batch_size=128, limit_batches=0,
+                 num_features=65, batch_size=128, limit_batches=0,
                  label=None, debug=False):
         """
         :param df:
@@ -37,8 +37,8 @@ class DataGenerator(Sequence):
         self.generator_type=generator_type
         self.zone_ids = zone_ids
         if debug:
-            print('DataGenerator(): num_batches = {}, batch_size = {}, len(tripdata) = {}'
-                  .format(self.limit_batches, self.batch_size, len(self.trip_data)))
+            print('DataGenerator(): generator_type={}, num_batches = {}, batch_size = {}, len(tripdata) = {}'
+                  .format(self.generator_type, self.limit_batches, self.batch_size, len(self.trip_data)))
 
     def __len__(self):
         """
@@ -105,17 +105,19 @@ class DataGenerator(Sequence):
             Precipitation = self.weather_data[self.weather_data['DATE'] == PUDate]['PRCP'].values[0]
 
             X[i] = np.concatenate((np.array([
-                PULocationLat,
-                PULocationLong,
-                DOLocationLat,
-                DOLocationLong,
+                sample['PULocationID'],
+                sample['DOLocationID'],
+                # PULocationLat,
+                # PULocationLong,
+                # DOLocationLat,
+                # DOLocationLong,
                 # TripDistance,
-                PUMonthDate,
-                PUTimeHour,
-                PUTimeMinute,
+                # PUTimeMinute,
                 Precipitation
             ]),
-                to_categorical(PUDayOfWeek, 7)
+                to_categorical(PUDayOfWeek, 7),
+                to_categorical(PUMonthDate, 31),
+                to_categorical(PUTimeHour, 24)
             ))
 
             y[i] = [sample['duration']] if self.generator_type == 'duration' \

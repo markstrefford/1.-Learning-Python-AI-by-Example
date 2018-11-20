@@ -52,7 +52,7 @@ class LossHistory(Callback):
 # Output = [
 #           'Duration' | 'Price excl tip'
 #          ]
-def nn(input_shape=15, output_shape=1,
+def nn(input_shape=65, output_shape=1,
        activation='elu', loss='mean_squared_error',
        optimizer=adam, dropout=0.25, debug=False, label=None):
 
@@ -63,19 +63,19 @@ def nn(input_shape=15, output_shape=1,
     model = Sequential()
 
     # 1st Fully Connected Layer
-    model.add(Dense(1024, input_dim=input_shape))
+    model.add(Dense(8192, input_dim=input_shape))
     model.add(Activation(activation))
-    model.add(Dropout(dropout))
+    # model.add(Dropout(dropout))
 
     # 2nd Fully Connected Layer
-    model.add(Dense(512))
-    model.add(Activation(activation))
-    model.add(Dropout(dropout))
+    # model.add(Dense(512))
+    # model.add(Activation(activation))
+    # model.add(Dropout(dropout))
 
     # 3rd Fully Connected Layer
-    model.add(Dense(128))
-    model.add(Activation(activation))
-    model.add(Dropout(dropout))
+    # model.add(Dense(512))
+    # model.add(Activation(activation))
+    # model.add(Dropout(dropout))
 
     # Output
     model.add(Dense(1))

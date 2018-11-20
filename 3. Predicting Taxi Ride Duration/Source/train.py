@@ -20,6 +20,10 @@ parser.add_argument('-debug', dest='debug',
                     default='N',
                     choices=('Y', 'N'),
                     help='Debug (Y)es or (N)o')
+parser.add_argument('-shuffle', dest='shuffle',
+                    default='Y',
+                    choices=('Y', 'N'),
+                    help='Debug (Y)es or (N)o')
 parser.add_argument('-batch-size', dest='batch-size',
                     default=128,
                     type=int,
@@ -41,12 +45,14 @@ parser.add_argument('-weather-data', dest='weather-data',
 parser.add_argument('-taxizone-file', dest='taxizone-file',
                     default='./data/taxi_zones',
                     help='Directory containing shape files from NYC website')
+
 args = vars(parser.parse_args())
 
 # Prepare data for training, validation and test
 # Start by loading the data and randomising the order
 trip_data = pd.read_csv(args['trip-data'], delimiter=',')  #.sample(frac=1).reset_index(drop=True)
-trip_data = shuffle(trip_data, random_state=42)
+if shuffle:
+    trip_data = shuffle(trip_data, random_state=42)
 
 sample_idx = {}
 num_samples = len(trip_data)
