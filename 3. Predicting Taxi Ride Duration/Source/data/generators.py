@@ -14,7 +14,7 @@ class DataGenerator(Sequence):
     """
     def __init__(self, trip_data, weather_data, taxizone_data, zone_ids,
                  generator_type='duration',
-                 num_features=66, batch_size=128, limit_batches=0,
+                 num_features=69, batch_size=128, limit_batches=0,
                  label=None, debug=False):
         """
         :param df:
@@ -105,13 +105,14 @@ class DataGenerator(Sequence):
             Precipitation = self.weather_data[self.weather_data['DATE'] == PUDate]['PRCP'].values[0]
 
             X[i] = np.concatenate((np.array([
-                sample['PULocationID'],
-                sample['DOLocationID'],
-                # PULocationLat,
-                # PULocationLong,
-                # DOLocationLat,
-                # DOLocationLong,
-                TripDistance,
+                # sample['PULocationID'],
+                # sample['DOLocationID'],
+                PULocationLat,
+                PULocationLong,
+                DOLocationLat,
+                DOLocationLong,
+                # TripDistance,
+                abs((PULocationLat - DOLocationLat) ** 2 + abs(PULocationLong - DOLocationLong) ** 2) ** 0.5,
                 # PUTimeMinute,
                 Precipitation
             ]),

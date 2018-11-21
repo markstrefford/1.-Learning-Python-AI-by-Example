@@ -11,6 +11,7 @@ from model.model import nn, LossHistory, tensorboard, checkpoint, progressbar
 from data import generators
 from sklearn.utils import shuffle
 
+num_features=68
 default_batch_size = 128
 
 # Process command line arguments if supplied
@@ -86,18 +87,18 @@ if debug:
 # Set up a generator
 train_generator = generators.DataGenerator(trip_data.loc[sample_idx['train']],
                                            weather_data, taxizone_data, zone_ids,
-                                           debug=debug,
+                                           debug=debug, num_features=num_features,
                                            batch_size=args['batch-size'])
 #                                          limit_batches=args['limit-batches'])
 valid_generator = generators.DataGenerator(trip_data.loc[sample_idx['valid']],
                                            weather_data, taxizone_data, zone_ids,
-                                           debug=debug,
+                                           debug=debug, num_features=num_features,
                                            batch_size=args['batch-size'])
 #                                           limit_batches=args['limit-batches'])
 
 # Setup the CNN
 history = LossHistory()
-nn = nn(debug=debug)
+nn = nn(debug=debug, input_shape=num_features)
 
 # Train CNN
 nn.fit_generator(train_generator, validation_data=valid_generator, epochs=args['epochs'],
