@@ -93,7 +93,7 @@ valid_generator = generators.DataGenerator(trip_data.loc[sample_idx['valid']],
                                            debug=debug, num_features=num_features,
                                            batch_size=args['batch-size'])
 
-# Setup the CNN
+# Setup the NN
 history = LossHistory()
 nn = nn(debug=debug, input_shape=num_features)
 

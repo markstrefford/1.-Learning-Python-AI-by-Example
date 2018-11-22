@@ -1,5 +1,5 @@
 """
-Create the CNN model in Keras
+Create the NN model in Keras
 """
 
 from keras.models import Sequential
