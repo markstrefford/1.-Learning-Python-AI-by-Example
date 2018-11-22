@@ -1,6 +1,5 @@
 """
 Data generators for loading training, validation and test data sets
-
 """
 
 import numpy as np
@@ -14,7 +13,7 @@ class DataGenerator(Sequence):
     """
     def __init__(self, trip_data, weather_data, taxizone_data, zone_ids,
                  generator_type='duration',
-                 num_features=25, batch_size=128, limit_batches=0,    # num_features=69
+                 num_features=69, batch_size=128, limit_batches=0,
                  label=None, debug=False):
         """
         :param df:
@@ -52,114 +51,70 @@ class DataGenerator(Sequence):
         :param batch_num:
         :return:
         """
-        X_columns = ['trip_distance', 'fare_amount',
-                     'year', 'month', 'day', 'hour', 'weekday', 'evening',
-                     'late_night', 'pickup_longitude', 'dropoff_longitude',
-                     'pickup_latitude', 'dropoff_latitude', 'latdiff', 'londiff',
-                     'euclidean', 'manhattan', 'downtown_pickup_distance',
-                     'downtown_dropoff_distance', 'jfk_pickup_distance',
-                     'jfk_dropoff_distance', 'ewr_pickup_distance', 'ewr_dropoff_distance',
-                     'lgr_pickup_distance', 'lgr_dropoff_distance']
-        y_column = ['duration_seconds']
-
         batch_data = self.trip_data[batch_num * self.batch_size:(batch_num + 1) * self.batch_size]
-        # X, y = self.__data_generation(batch_data.reset_index())
-        X = batch_data[X_columns]
-        y = batch_data[y_column] / 60
+        X, y = self.__data_generation(batch_data.reset_index())
         return X, y
 
     def __data_generation(self, batch_data):
         """
         Generates data containing batch_size samples
         Input = [
-                  1, 2: 'PULocationLat', 'PULocationLong',
-                  3, 4: 'DOLocationLat', 'DOLocationLong',
-                  Not using distance...  'TripDistance',
-                  5: 'PUDate',
-                  6 - 12: 'PUDayOfWeek' (one-hot encoding),
-                  13, 14: 'PUHour', 'PUMinute',
-                  15: 'Precipitation'
-                ]
-
-        Could also add in:
-                [
-                  'Temperature', 'WindSpeed', 'SnowDepth', 'Snow'
+                  'PULocationLat',
+                  'PULocationLong',
+                  'DOLocationLat',
+                  'DOLocationLong',
+                  'Euclidean distance',
+                  'Precipitation',
+                  'PUDayOfWeek' (one-hot encoding),
+                  'PUMonthDate'  (one-hot encoding),
+                  'PUHour'  (one-hot encoding)
                 ]
         Output = [
-                  'Duration' | 'Price excl tip'
+                  'Duration' '
                  ]
         :param index: list
         """
-        X_columns = ['trip_distance', 'fare_amount',
-                     'year', 'month', 'day', 'hour', 'weekday', 'evening',
-                     'late_night', 'pickup_longitude', 'dropoff_longitude',
-                     'pickup_latitude', 'dropoff_latitude', 'latdiff', 'londiff',
-                     'euclidean', 'manhattan', 'downtown_pickup_distance',
-                     'downtown_dropoff_distance', 'jfk_pickup_distance',
-                     'jfk_dropoff_distance', 'ewr_pickup_distance', 'ewr_dropoff_distance',
-                     'lgr_pickup_distance', 'lgr_dropoff_distance']
-        y_column = ['duration_seconds']
-        #X = np.zeros((self.batch_size, self.num_features), dtype=float)
-        #y = np.zeros((self.batch_size, self.num_outputs), dtype=float)
+        X = np.zeros((self.batch_size, self.num_features), dtype=float)
+        y = np.zeros((self.batch_size, self.num_outputs), dtype=float)
 
-        # TODO - Make this more efficient, move to function above if we're just cutting rows!!
-        # for i, sample in batch_data.iterrows():
-
-        X = batch_data[X_columns]
-        y = batch_data[y_column] / 60    # Convert to minutes
+        for i, sample in batch_data.iterrows():
             # Get lat/long of pickup and dropoff locations
-            # PULocation = self.taxizone_data.loc[sample['PULocationID']].centroids
-            # PULocationLong, PULocationLat = PULocation.x, PULocation.y
-            # DOLocation = self.taxizone_data.loc[sample['DOLocationID']].centroids
-            # DOLocationLong, DOLocationLat = DOLocation.x, DOLocation.y
-            # TripDistance = sample.trip_distance
-            # # Get month date, day of week and hours/mins for pickup
-            # PUDateTime = datetime.strptime(sample.tpep_pickup_datetime, '%Y-%m-%d %H:%M:%S')
-            # PUDate = PUDateTime.strftime('%Y-%m-%d')
-            # PUYear, PUMonth, PUMonthDate = PUDate.split('-')
-            # # TODO - Add this to pre-processing of trip data! Some random months in the data!!
-            # if PUYear != '2018' or PUMonth != '06':
-            #     # print('ERROR: Invalid date {}-{}-{}'.format(PUYear, PUMonth, PUMonthDate))
-            #     continue
-            # PUDayOfWeek = PUDateTime.weekday()
-            # PUTimeHour, PUTimeMinute = datetime.strptime(
-            #     sample.tpep_pickup_datetime, '%Y-%m-%d %H:%M:%S'
-            # ).strftime('%H:%M').split(':')
-            #
-            # # Get precipitation for that day
-            # Precipitation = self.weather_data[self.weather_data['DATE'] == PUDate]['PRCP'].values[0]
-            #
-            # X[i] = np.concatenate((np.array([
-            #     # sample['PULocationID'],
-            #     # sample['DOLocationID'],
-            #     PULocationLat,
-            #     PULocationLong,
-            #     DOLocationLat,
-            #     DOLocationLong,
-            #     # TripDistance,
-            #     abs((PULocationLat - DOLocationLat) ** 2 + abs(PULocationLong - DOLocationLong) ** 2) ** 0.5,
-            #     # PUTimeMinute,
-            #     Precipitation
-            # ]),
-            #     to_categorical(PUDayOfWeek, 7),
-            #     to_categorical(PUMonthDate, 31),
-            #     to_categorical(PUTimeHour, 24)
-            # ))
-            #
-            # y[i] = [sample['duration']] if self.generator_type == 'duration' \
-            #     else [sample['total_amount'] - sample['tip_amount']]
+            PULocation = self.taxizone_data.loc[sample['PULocationID']].centroids
+            PULocationLong, PULocationLat = PULocation.x, PULocation.y
+            DOLocation = self.taxizone_data.loc[sample['DOLocationID']].centroids
+            DOLocationLong, DOLocationLat = DOLocation.x, DOLocation.y
+            
+            # Get month date, day of week and hours/mins for pickup
+            PUDateTime = datetime.strptime(sample.tpep_pickup_datetime, '%Y-%m-%d %H:%M:%S')
+            PUDate = PUDateTime.strftime('%Y-%m-%d')
+            PUYear, PUMonth, PUMonthDate = PUDate.split('-')
+            # TODO - Add this to pre-processing of trip data! Some random months in the data!!
+            if PUYear != '2018' or PUMonth != '06':
+                continue
+            PUDayOfWeek = PUDateTime.weekday()
+            PUTimeHour, PUTimeMinute = datetime.strptime(
+                sample.tpep_pickup_datetime, '%Y-%m-%d %H:%M:%S'
+            ).strftime('%H:%M').split(':')
 
+            # Get precipitation for that day
+            Precipitation = self.weather_data[self.weather_data['DATE'] == PUDate]['PRCP'].values[0]
 
-            # Extract relevant columns
-            # Add in geo location for PU and DO Location IDs
-            # Populate X
-            # Populate y with price and duration
-            # if self.debug:
-            #     print(X[i], y[i])
-        # return X, y
+            X[i] = np.concatenate((np.array([
 
+                PULocationLat,
+                PULocationLong,
+                DOLocationLat,
+                DOLocationLong,
+                abs((PULocationLat - DOLocationLat) ** 2 + abs(PULocationLong - DOLocationLong) ** 2) ** 0.5,
+                Precipitation
+            ]),
+                to_categorical(PUDayOfWeek, 7),
+                to_categorical(PUMonthDate, 31),
+                to_categorical(PUTimeHour, 24)
+            ))
 
+            y[i] = [sample['duration']] if self.generator_type == 'duration' \
+                else [sample['total_amount'] - sample['tip_amount']]
 
-
-
+        return X, y
 
