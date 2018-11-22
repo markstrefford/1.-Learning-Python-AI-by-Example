@@ -11,7 +11,7 @@ from model.model import nn, LossHistory, tensorboard, checkpoint, progressbar
 from data import generators
 from sklearn.utils import shuffle
 
-num_features=68
+num_features=25
 default_batch_size = 128
 
 # Process command line arguments if supplied

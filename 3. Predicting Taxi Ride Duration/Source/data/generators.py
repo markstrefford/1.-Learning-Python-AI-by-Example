@@ -86,14 +86,15 @@ class DataGenerator(Sequence):
                      'downtown_dropoff_distance', 'jfk_pickup_distance',
                      'jfk_dropoff_distance', 'ewr_pickup_distance', 'ewr_dropoff_distance',
                      'lgr_pickup_distance', 'lgr_dropoff_distance']
-        y_columns = ['duration']
+        y_column = ['duration_seconds']
         X = np.zeros((self.batch_size, self.num_features), dtype=float)
         y = np.zeros((self.batch_size, self.num_outputs), dtype=float)
 
+        # TODO - Make this more efficient, move to function above if we're just cutting rows!!
         for i, sample in batch_data.iterrows():
 
             X[i] = sample[X_columns]
-            y[i] = sample[y_columns]
+            y[i] = sample[y_column] / 60    # Convert to minutes
             # Get lat/long of pickup and dropoff locations
             # PULocation = self.taxizone_data.loc[sample['PULocationID']].centroids
             # PULocationLong, PULocationLat = PULocation.x, PULocation.y
