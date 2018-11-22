@@ -52,8 +52,21 @@ class DataGenerator(Sequence):
         :param batch_num:
         :return:
         """
+        X_columns = ['trip_distance', 'fare_amount',
+                     'year', 'month', 'day', 'hour', 'weekday', 'evening',
+                     'late_night', 'pickup_longitude', 'dropoff_longitude',
+                     'pickup_latitude', 'dropoff_latitude', 'latdiff', 'londiff',
+                     'euclidean', 'manhattan', 'downtown_pickup_distance',
+                     'downtown_dropoff_distance', 'jfk_pickup_distance',
+                     'jfk_dropoff_distance', 'ewr_pickup_distance', 'ewr_dropoff_distance',
+                     'lgr_pickup_distance', 'lgr_dropoff_distance']
+        y_column = ['duration_seconds']
+
         batch_data = self.trip_data[batch_num * self.batch_size:(batch_num + 1) * self.batch_size]
-        X, y = self.__data_generation(batch_data.reset_index())
+        # X, y = self.__data_generation(batch_data.reset_index())
+        X = batch_data[X_columns]
+        y = batch_data[y_column] / 60
+        print('Batch: X.shape={}, y.shape={}'.format(X.shape, y.shape))
         return X, y
 
     def __data_generation(self, batch_data):
