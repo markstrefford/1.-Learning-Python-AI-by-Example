@@ -111,7 +111,7 @@ def nn(input_shape=25, output_shape=1,    # input_shape=69
     model.add(Dense(1))
     model.add(Activation('linear'))
 
-    model.compile(loss=loss, optimizer=optimizer, metrics=['mae'])
+    model.compile(loss=loss, optimizer=optimizer)   # , metrics=['mae'])
 
     if debug:
         print(model.summary())

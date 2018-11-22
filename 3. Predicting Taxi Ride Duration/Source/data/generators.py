@@ -66,7 +66,6 @@ class DataGenerator(Sequence):
         # X, y = self.__data_generation(batch_data.reset_index())
         X = batch_data[X_columns]
         y = batch_data[y_column] / 60
-        print('Batch: X.shape={}, y.shape={}'.format(X.shape, y.shape))
         return X, y
 
     def __data_generation(self, batch_data):
