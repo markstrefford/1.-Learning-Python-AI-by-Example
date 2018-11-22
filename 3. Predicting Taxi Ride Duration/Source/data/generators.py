@@ -14,7 +14,7 @@ class DataGenerator(Sequence):
     """
     def __init__(self, trip_data, weather_data, taxizone_data, zone_ids,
                  generator_type='duration',
-                 num_features=69, batch_size=128, limit_batches=0,
+                 num_features=25, batch_size=128, limit_batches=0,    # num_features=69
                  label=None, debug=False):
         """
         :param df:
@@ -78,51 +78,64 @@ class DataGenerator(Sequence):
                  ]
         :param index: list
         """
+        X_columns = ['trip_distance', 'fare_amount',
+                     'year', 'month', 'day', 'hour', 'weekday', 'evening',
+                     'late_night', 'pickup_longitude', 'dropoff_longitude',
+                     'pickup_latitude', 'dropoff_latitude', 'latdiff', 'londiff',
+                     'euclidean', 'manhattan', 'downtown_pickup_distance',
+                     'downtown_dropoff_distance', 'jfk_pickup_distance',
+                     'jfk_dropoff_distance', 'ewr_pickup_distance', 'ewr_dropoff_distance',
+                     'lgr_pickup_distance', 'lgr_dropoff_distance']
+        y_columns = ['duration']
         X = np.zeros((self.batch_size, self.num_features), dtype=float)
         y = np.zeros((self.batch_size, self.num_outputs), dtype=float)
 
         for i, sample in batch_data.iterrows():
+
+            X[i] = sample[X_columns]
+            y[i] = sample[y_columns]
             # Get lat/long of pickup and dropoff locations
-            PULocation = self.taxizone_data.loc[sample['PULocationID']].centroids
-            PULocationLong, PULocationLat = PULocation.x, PULocation.y
-            DOLocation = self.taxizone_data.loc[sample['DOLocationID']].centroids
-            DOLocationLong, DOLocationLat = DOLocation.x, DOLocation.y
-            TripDistance = sample.trip_distance
-            # Get month date, day of week and hours/mins for pickup
-            PUDateTime = datetime.strptime(sample.tpep_pickup_datetime, '%Y-%m-%d %H:%M:%S')
-            PUDate = PUDateTime.strftime('%Y-%m-%d')
-            PUYear, PUMonth, PUMonthDate = PUDate.split('-')
-            # TODO - Add this to pre-processing of trip data! Some random months in the data!!
-            if PUYear != '2018' or PUMonth != '06':
-                # print('ERROR: Invalid date {}-{}-{}'.format(PUYear, PUMonth, PUMonthDate))
-                continue
-            PUDayOfWeek = PUDateTime.weekday()
-            PUTimeHour, PUTimeMinute = datetime.strptime(
-                sample.tpep_pickup_datetime, '%Y-%m-%d %H:%M:%S'
-            ).strftime('%H:%M').split(':')
+            # PULocation = self.taxizone_data.loc[sample['PULocationID']].centroids
+            # PULocationLong, PULocationLat = PULocation.x, PULocation.y
+            # DOLocation = self.taxizone_data.loc[sample['DOLocationID']].centroids
+            # DOLocationLong, DOLocationLat = DOLocation.x, DOLocation.y
+            # TripDistance = sample.trip_distance
+            # # Get month date, day of week and hours/mins for pickup
+            # PUDateTime = datetime.strptime(sample.tpep_pickup_datetime, '%Y-%m-%d %H:%M:%S')
+            # PUDate = PUDateTime.strftime('%Y-%m-%d')
+            # PUYear, PUMonth, PUMonthDate = PUDate.split('-')
+            # # TODO - Add this to pre-processing of trip data! Some random months in the data!!
+            # if PUYear != '2018' or PUMonth != '06':
+            #     # print('ERROR: Invalid date {}-{}-{}'.format(PUYear, PUMonth, PUMonthDate))
+            #     continue
+            # PUDayOfWeek = PUDateTime.weekday()
+            # PUTimeHour, PUTimeMinute = datetime.strptime(
+            #     sample.tpep_pickup_datetime, '%Y-%m-%d %H:%M:%S'
+            # ).strftime('%H:%M').split(':')
+            #
+            # # Get precipitation for that day
+            # Precipitation = self.weather_data[self.weather_data['DATE'] == PUDate]['PRCP'].values[0]
+            #
+            # X[i] = np.concatenate((np.array([
+            #     # sample['PULocationID'],
+            #     # sample['DOLocationID'],
+            #     PULocationLat,
+            #     PULocationLong,
+            #     DOLocationLat,
+            #     DOLocationLong,
+            #     # TripDistance,
+            #     abs((PULocationLat - DOLocationLat) ** 2 + abs(PULocationLong - DOLocationLong) ** 2) ** 0.5,
+            #     # PUTimeMinute,
+            #     Precipitation
+            # ]),
+            #     to_categorical(PUDayOfWeek, 7),
+            #     to_categorical(PUMonthDate, 31),
+            #     to_categorical(PUTimeHour, 24)
+            # ))
+            #
+            # y[i] = [sample['duration']] if self.generator_type == 'duration' \
+            #     else [sample['total_amount'] - sample['tip_amount']]
 
-            # Get precipitation for that day
-            Precipitation = self.weather_data[self.weather_data['DATE'] == PUDate]['PRCP'].values[0]
-
-            X[i] = np.concatenate((np.array([
-                # sample['PULocationID'],
-                # sample['DOLocationID'],
-                PULocationLat,
-                PULocationLong,
-                DOLocationLat,
-                DOLocationLong,
-                # TripDistance,
-                abs((PULocationLat - DOLocationLat) ** 2 + abs(PULocationLong - DOLocationLong) ** 2) ** 0.5,
-                # PUTimeMinute,
-                Precipitation
-            ]),
-                to_categorical(PUDayOfWeek, 7),
-                to_categorical(PUMonthDate, 31),
-                to_categorical(PUTimeHour, 24)
-            ))
-
-            y[i] = [sample['duration']] if self.generator_type == 'duration' \
-                else [sample['total_amount'] - sample['tip_amount']]
 
             # Extract relevant columns
             # Add in geo location for PU and DO Location IDs

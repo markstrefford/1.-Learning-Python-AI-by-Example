@@ -4,10 +4,11 @@ Create the CNN model in Keras
 """
 
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Flatten
+from keras.layers import Dense, Dropout, Activation, Flatten, BatchNormalization
 from keras.utils import plot_model
 from keras.callbacks import TensorBoard, Callback, ModelCheckpoint, ProgbarLogger
 from keras.optimizers import Adam
+from keras.regularizers import l1
 from datetime import datetime
 
 # Callbacks
@@ -52,7 +53,7 @@ class LossHistory(Callback):
 # Output = [
 #           'Duration' | 'Price excl tip'
 #          ]
-def nn(input_shape=69, output_shape=1,
+def nn(input_shape=25, output_shape=1,    # input_shape=69
        activation='elu', loss='mean_squared_error',
        optimizer=adam, dropout=0.25, debug=False, label=None):
 
@@ -62,26 +63,55 @@ def nn(input_shape=69, output_shape=1,
 
     model = Sequential()
 
-    # 1st Fully Connected Layer
-    model.add(Dense(8192, input_dim=input_shape))
+    # # 1st Fully Connected Layer
+    # model.add(Dense(8192, input_dim=input_shape))
+    # model.add(Activation(activation))
+    # # model.add(Dropout(dropout))
+    #
+    # # 2nd Fully Connected Layer
+    # model.add(Dense(1024))
+    # model.add(Activation(activation))
+    # # model.add(Dropout(dropout))
+    #
+    # # # 3rd Fully Connected Layer
+    # # model.add(Dense(128))
+    # # model.add(Activation(activation))
+    # # model.add(Dropout(dropout))
+
+    model.add(Dense(512, input_dim=input_shape, activity_regularizer=l1(0.01)))
     model.add(Activation(activation))
+    model.add(BatchNormalization())
     # model.add(Dropout(dropout))
 
     # 2nd Fully Connected Layer
-    model.add(Dense(1024))
+    model.add(Dense(256))
     model.add(Activation(activation))
+    model.add(BatchNormalization())
     # model.add(Dropout(dropout))
 
     # # 3rd Fully Connected Layer
-    # model.add(Dense(128))
-    # model.add(Activation(activation))
-    # model.add(Dropout(dropout))
+    model.add(Dense(128))
+    model.add(Activation(activation))
+    model.add(BatchNormalization())
+    #model.add(Dropout(dropout))
+
+    # # 4th Fully Connected Layer
+    model.add(Dense(64))
+    model.add(Activation(activation))
+    model.add(BatchNormalization())
+    #model.add(Dropout(dropout))
+
+    # # 5th Fully Connected Layer
+    model.add(Dense(32))
+    model.add(Activation(activation))
+    model.add(BatchNormalization())
+    #model.add(Dropout(dropout))
 
     # Output
     model.add(Dense(1))
     model.add(Activation('linear'))
 
-    model.compile(loss=loss, optimizer=optimizer)
+    model.compile(loss=loss, optimizer=optimizer, metrics=['mae'])
 
     if debug:
         print(model.summary())
