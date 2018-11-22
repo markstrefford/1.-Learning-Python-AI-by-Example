@@ -9,7 +9,6 @@ import numpy as np
 import os
 import argparse
 import scipy.misc
-from subprocess import call
 from model.model import cnn
 from data.generators import get_image
 
