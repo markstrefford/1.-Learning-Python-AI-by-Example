@@ -51,7 +51,7 @@ class LossHistory(Callback):
 # Output = [
 #           'Duration' | 'Price excl tip'
 #          ]
-def nn(input_shape=69, output_shape=1,
+def nn(input_shape=68, output_shape=1,
        activation='elu', loss='mean_squared_error',
        optimizer=adam, dropout=0.25, debug=False, label=None):
 

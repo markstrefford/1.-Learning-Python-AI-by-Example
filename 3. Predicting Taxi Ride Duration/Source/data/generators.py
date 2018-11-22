@@ -13,7 +13,7 @@ class DataGenerator(Sequence):
     """
     def __init__(self, trip_data, weather_data, taxizone_data, zone_ids,
                  generator_type='duration',
-                 num_features=69, batch_size=128, limit_batches=0,
+                 num_features=68, batch_size=128, limit_batches=0,
                  label=None, debug=False):
         """
         :param df:
@@ -83,7 +83,7 @@ class DataGenerator(Sequence):
             PULocationLong, PULocationLat = PULocation.x, PULocation.y
             DOLocation = self.taxizone_data.loc[sample['DOLocationID']].centroids
             DOLocationLong, DOLocationLat = DOLocation.x, DOLocation.y
-            
+
             # Get month date, day of week and hours/mins for pickup
             PUDateTime = datetime.strptime(sample.tpep_pickup_datetime, '%Y-%m-%d %H:%M:%S')
             PUDate = PUDateTime.strftime('%Y-%m-%d')
